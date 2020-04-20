@@ -44,7 +44,7 @@ public class SynchController {
 	
 	public void loginToOracle(/*JTextField usernameField, JTextField passwordField, JTextField URLField, JCheckBox defser*/) {
 		String username = lView.textUsername.getText();
-		String password = lView.textPassword.getText();
+		String password = charsToString(lView.passwordField.getPassword());
 		boolean ok = true;
 		try {
 			if(lView.checkBoxDefaultServer.isSelected()) {
@@ -71,5 +71,15 @@ public class SynchController {
 	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
+	}
+	
+	private String charsToString(char[] chs) {
+		if(chs == null) return null;
+		if(chs.length == 0) return null;
+		StringBuilder strb = new StringBuilder();
+		for(char c : chs) {
+			strb.append(c);
+		}
+		return strb.toString();
 	}
 }

@@ -9,15 +9,16 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JCheckBox;
+import javax.swing.JPasswordField;
 
 public class LoginView extends JDialog {
 	JTextField textURL;
 	JTextField textUsername;
-	JTextField textPassword;
 	private JButton btnLogin;
 	private JButton btnCancel;
 	private JButton btnHelp;
 	JCheckBox checkBoxDefaultServer;
+	JPasswordField passwordField;
 
 	/**
 	 * Create the dialog.
@@ -37,12 +38,6 @@ public class LoginView extends JDialog {
 		textUsername.setText("H20_N5IF3V");
 		getContentPane().add(textUsername);
 		textUsername.setColumns(10);
-		
-		textPassword = new JTextField();
-		textPassword.setColumns(10);
-		textPassword.setText("sasmadar8");
-		textPassword.setBounds(41, 155, 279, 19);
-		getContentPane().add(textPassword);
 		
 		JLabel lblUrl = new JLabel("URL:");
 		lblUrl.setBounds(41, 10, 279, 15);
@@ -81,6 +76,10 @@ public class LoginView extends JDialog {
 		btnHelp = new JButton("Help");
 		btnHelp.setBounds(271, 283, 117, 25);
 		getContentPane().add(btnHelp);
+		
+		passwordField = new JPasswordField();
+		passwordField.setBounds(41, 155, 175, 19);
+		getContentPane().add(passwordField);
 
 	}
 }
