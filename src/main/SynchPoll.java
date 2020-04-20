@@ -61,7 +61,7 @@ public class SynchPoll extends JDialog {
 				JButton cancelButton = new JButton("Cancel");
 				cancelButton.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						dispose();
+						synchController.cancelSynchSession();
 					}
 				});
 				cancelButton.setActionCommand("Cancel");

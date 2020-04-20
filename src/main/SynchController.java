@@ -1,13 +1,21 @@
 package main;
 
-import javax.swing.JFrame;
+import java.sql.SQLException;
 
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+
+import models.*;
 import utilities.*;
 
 public class SynchController {
 	
 	private SynchOption sOpt = SynchOption.NONE;
-	private SynchPoll synchPoll = null;
+	private SynchPoll sPoll = null;
+	private LoginView lView = null;
+	private DatabaseAPI dbapi = new DatabaseAPI();
 	
 	public void synchWithType(SynchOption sOpt) {
 		if(sOpt == SynchOption.ORACLE) {
@@ -16,13 +24,52 @@ public class SynchController {
 	}
 	
 	public void startSynchSession(JFrame owner) {
-		this.synchPoll = new SynchPoll(owner, SynchController.this);
-		this.synchPoll.setVisible(true);
+		this.sPoll = new SynchPoll(owner, SynchController.this);
+		this.sPoll.setVisible(true);
 		
+	}
+	
+	public void cancelSynchSession() {
+		this.sPoll.dispose();
+	}
+	
+	public void cancelSynchWithOracle() {
+		this.lView.dispose();
 	}
 	
 	public void synchWithOracle() {
-		
+		this.lView = new LoginView(sPoll, SynchController.this);
+		lView.setVisible(true);
 	}
 	
+	public void loginToOracle(/*JTextField usernameField, JTextField passwordField, JTextField URLField, JCheckBox defser*/) {
+		String username = lView.textUsername.getText();
+		String password = lView.textPassword.getText();
+		boolean ok = true;
+		try {
+			if(lView.checkBoxDefaultServer.isSelected()) {
+				dbapi.connectToOracle(username, password);
+			}
+			else {
+				String URL = lView.textURL.getText();
+				dbapi.connectToOracle(username, password, URL);
+			}
+		}
+		catch(SQLException exc) {
+			sendMessage("Nem sikerült a login az Oracle adatbázisra: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			ok = false;
+		}
+		catch(ClassNotFoundException exc) {
+			sendMessage("Nem találtunk drivert az Oracle adatbázishoz: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			ok = false;
+		}
+		if(ok) {
+			sendMessage("Sikeres bejelentkezés az Oracle adatbázisra.", JOptionPane.INFORMATION_MESSAGE);
+			this.sOpt = SynchOption.ORACLE;
+		}
+	}
+	
+	public void sendMessage(String msg, int opt) {
+		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
+	}
 }
