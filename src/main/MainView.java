@@ -15,12 +15,15 @@ import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
 
 public class MainView extends JFrame {
 
 	private JPanel contentPane;
 	private JPanel cardPanel;
-	private SynchController synchController = new SynchController();
+	private SynchController synchController;
+	private DatabaseController dbController = new DatabaseController();
 	private JTable tableFieldNames;
 	private JTable tableInput;
 	private JTable tableOutput;
@@ -46,6 +49,7 @@ public class MainView extends JFrame {
 	 * Create the frame.
 	 */
 	public MainView() {
+		this.synchController = new SynchController(dbController);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1024, 768);
 		contentPane = new JPanel();
@@ -81,6 +85,13 @@ public class MainView extends JFrame {
 		databasePanel.setLayout(null);
 		
 		comboBoxTableNames = new JComboBox<String>();
+		comboBoxTableNames.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent e) {
+				if (e.getStateChange() == ItemEvent.SELECTED) {
+					dbController.tableSelected(MainView.this);
+				}
+			}
+		});
 		comboBoxTableNames.setBounds(12, 30, 321, 24);
 		databasePanel.add(comboBoxTableNames);
 		
@@ -151,5 +162,17 @@ public class MainView extends JFrame {
 	
 	void dbPanel(boolean vis) {
 		databasePanel.setVisible(vis);
+	}
+	
+	JTable getTableFieldNames() {
+		return tableFieldNames;
+	}
+
+	JTable getTableInput() {
+		return tableInput;
+	}
+
+	JTable getTableOutput() {
+		return tableOutput;
 	}
 }

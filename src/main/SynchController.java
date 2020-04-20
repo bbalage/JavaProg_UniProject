@@ -18,6 +18,10 @@ public class SynchController {
 	private MainView mainView = null;
 	private DatabaseController dbController;
 	
+	SynchController(DatabaseController dbc){
+		this.dbController = dbc;
+	}
+	
 	public void synchWithType(SynchOption sOpt) {
 		if(sOpt == SynchOption.ORACLE) {
 			synchWithOracle();
@@ -40,7 +44,6 @@ public class SynchController {
 	}
 	
 	public void synchWithOracle() {
-		this.dbController = new DatabaseController();
 		this.lView = new LoginView(sPoll, SynchController.this);
 		lView.setVisible(true);
 	}

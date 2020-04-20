@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import models.DatabaseAPI;
+import utilities.*;
 
 public class DatabaseController {
 
@@ -35,14 +36,19 @@ public class DatabaseController {
 		return true;
 	}
 	
-	public void setupDBInterface(MainView mainFrame) throws SQLException {
-		JComboBox<String> cb = mainFrame.getComboBoxTableNames();
+	public void setupDBInterface(MainView mainView) throws SQLException {
+		JComboBox<String> cb = mainView.getComboBoxTableNames();
 		String[] tableNames = dbapi.getTableNames();
-		cb.addItem("Válassz táblát!");
+		cb.addItem("Válasszon táblát!");
 		for(String str : tableNames) cb.addItem(str);
+		mainView.switchToTableCard();
 	}
 	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
+	}
+	
+	public void tableSelected(MainView mainView) {
+		
 	}
 }
