@@ -15,8 +15,8 @@ public class SynchController {
 	private SynchOption sOpt = SynchOption.NONE;
 	private SynchPoll sPoll = null;
 	private LoginView lView = null;
-	private DatabaseAPI dbapi = new DatabaseAPI();
 	private MainView mainView = null;
+	private DatabaseController dbController;
 	
 	public void synchWithType(SynchOption sOpt) {
 		if(sOpt == SynchOption.ORACLE) {
@@ -40,30 +40,21 @@ public class SynchController {
 	}
 	
 	public void synchWithOracle() {
+		this.dbController = new DatabaseController();
 		this.lView = new LoginView(sPoll, SynchController.this);
 		lView.setVisible(true);
 	}
 	
 	public void loginToOracle(/*JTextField usernameField, JTextField passwordField, JTextField URLField, JCheckBox defser*/) {
-		String username = lView.textUsername.getText();
-		String password = charsToString(lView.passwordField.getPassword());
-		boolean ok = true;
-		try {
-			if(lView.checkBoxDefaultServer.isSelected()) {
-				dbapi.connectToOracle(username, password);
-			}
-			else {
-				String URL = lView.textURL.getText();
-				dbapi.connectToOracle(username, password, URL);
-			}
+		String username = lView.getTextUsername().getText();
+		String password = charsToString(lView.getPasswordField().getPassword());
+		boolean ok;
+		if(lView.getCheckBoxDefaultServer().isSelected()) {
+			ok = dbController.connectToOracle(username, password);
 		}
-		catch(SQLException exc) {
-			sendMessage("Nem sikerült a login az Oracle adatbázisra: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
-			ok = false;
-		}
-		catch(ClassNotFoundException exc) {
-			sendMessage("Nem találtunk drivert az Oracle adatbázishoz: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
-			ok = false;
+		else {
+			String URL = lView.getTextURL().getText();
+			ok = dbController.connectToOracle(username, password, URL);
 		}
 		if(ok) {
 			sendMessage("Sikeres bejelentkezés az Oracle adatbázisra.", JOptionPane.INFORMATION_MESSAGE);
@@ -76,10 +67,20 @@ public class SynchController {
 	private void loadSynchedSession() {
 		this.sPoll.dispose();
 		this.mainView.switchToTableCard();
+		mainView.dbPanel(false);
 		switch(this.sOpt) {
 		case ORACLE:
 		//case SQLITE:
-			System.out.println("Synch session with oracle loading.");
+			try {
+				System.out.println("Synch session with oracle loading.");
+				dbController.setupDBInterface(this.mainView);
+				mainView.dbPanel(true);
+			}
+			catch(SQLException exc) {
+				this.dbController = null;
+				this.sOpt = SynchOption.NONE;
+				this.mainView.switchToHomeCard();
+			}
 			break;
 		}
 	}

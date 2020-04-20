@@ -12,6 +12,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 
@@ -23,6 +24,8 @@ public class MainView extends JFrame {
 	private JTable tableFieldNames;
 	private JTable tableInput;
 	private JTable tableOutput;
+	private JComboBox<String> comboBoxTableNames;
+	private JPanel databasePanel;
 	/**
 	 * Launch the application.
 	 */
@@ -72,18 +75,19 @@ public class MainView extends JFrame {
 		cardPanel.add(tablePanel, "tablePanel");
 		tablePanel.setLayout(null);
 		
-		JPanel databasePanel = new JPanel();
+		databasePanel = new JPanel();
 		databasePanel.setBounds(37, 0, 710, 221);
 		tablePanel.add(databasePanel);
 		databasePanel.setLayout(null);
 		
-		JComboBox comboBoxTableNames = new JComboBox();
+		comboBoxTableNames = new JComboBox<String>();
 		comboBoxTableNames.setBounds(12, 30, 321, 24);
 		databasePanel.add(comboBoxTableNames);
 		
-		JScrollPane scrollPane = new JScrollPane();
+		JScrollPane scrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBounds(360, 30, 321, 132);
 		databasePanel.add(scrollPane);
+		
 		
 		tableFieldNames = new JTable();
 		scrollPane.setViewportView(tableFieldNames);
@@ -96,14 +100,14 @@ public class MainView extends JFrame {
 		btnLoad.setBounds(564, 184, 117, 25);
 		databasePanel.add(btnLoad);
 		
-		JScrollPane scrollPane_1 = new JScrollPane();
+		JScrollPane scrollPane_1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_1.setBounds(37, 233, 960, 46);
 		tablePanel.add(scrollPane_1);
 		
 		tableInput = new JTable();
 		scrollPane_1.setViewportView(tableInput);
 		
-		JScrollPane scrollPane_2 = new JScrollPane();
+		JScrollPane scrollPane_2 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_2.setBounds(37, 293, 960, 358);
 		tablePanel.add(scrollPane_2);
 		
@@ -134,5 +138,18 @@ public class MainView extends JFrame {
 	void switchToTableCard() {
 		CardLayout cl = (CardLayout)cardPanel.getLayout();
 		cl.show(cardPanel, "tablePanel");
+	}
+	
+	void switchToHomeCard() {
+		CardLayout cl = (CardLayout)cardPanel.getLayout();
+		cl.show(cardPanel, "homePanel");
+	}
+	
+	JComboBox<String> getComboBoxTableNames() {
+		return comboBoxTableNames;
+	}
+	
+	void dbPanel(boolean vis) {
+		databasePanel.setVisible(vis);
 	}
 }

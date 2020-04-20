@@ -12,13 +12,29 @@ import javax.swing.JCheckBox;
 import javax.swing.JPasswordField;
 
 public class LoginView extends JDialog {
-	JTextField textURL;
-	JTextField textUsername;
+	private JTextField textURL;
+	private JTextField textUsername;
 	private JButton btnLogin;
 	private JButton btnCancel;
 	private JButton btnHelp;
-	JCheckBox checkBoxDefaultServer;
-	JPasswordField passwordField;
+	private JCheckBox checkBoxDefaultServer;
+	private JPasswordField passwordField;
+
+	JTextField getTextURL() {
+		return textURL;
+	}
+
+	JTextField getTextUsername() {
+		return textUsername;
+	}
+
+	JCheckBox getCheckBoxDefaultServer() {
+		return checkBoxDefaultServer;
+	}
+
+	JPasswordField getPasswordField() {
+		return passwordField;
+	}
 
 	/**
 	 * Create the dialog.
