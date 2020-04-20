@@ -16,6 +16,7 @@ public class SynchController {
 	private SynchPoll sPoll = null;
 	private LoginView lView = null;
 	private DatabaseAPI dbapi = new DatabaseAPI();
+	private MainView mainView = null;
 	
 	public void synchWithType(SynchOption sOpt) {
 		if(sOpt == SynchOption.ORACLE) {
@@ -24,6 +25,7 @@ public class SynchController {
 	}
 	
 	public void startSynchSession(JFrame owner) {
+		this.mainView = (MainView) owner;
 		this.sPoll = new SynchPoll(owner, SynchController.this);
 		this.sPoll.setVisible(true);
 		
@@ -66,6 +68,19 @@ public class SynchController {
 		if(ok) {
 			sendMessage("Sikeres bejelentkezés az Oracle adatbázisra.", JOptionPane.INFORMATION_MESSAGE);
 			this.sOpt = SynchOption.ORACLE;
+			this.lView.dispose();
+			loadSynchedSession();
+		}
+	}
+	
+	private void loadSynchedSession() {
+		this.sPoll.dispose();
+		this.mainView.switchToTableCard();
+		switch(this.sOpt) {
+		case ORACLE:
+		//case SQLITE:
+			System.out.println("Synch session with oracle loading.");
+			break;
 		}
 	}
 	
@@ -81,5 +96,9 @@ public class SynchController {
 			strb.append(c);
 		}
 		return strb.toString();
+	}
+	
+	public SynchOption getsOpt() {
+		return sOpt;
 	}
 }

@@ -21,7 +21,6 @@ public class DatabaseAPI {
 	
 	public void closeConnection() throws SQLException{
 		if(conn != null) {
-			//conn.commit();
 			//this.insertrsmd = null;
 			//this.insertstmt = null;
 			//this.mrs = null;
