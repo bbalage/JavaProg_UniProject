@@ -23,7 +23,7 @@ public class MainView extends JFrame {
 	private JPanel contentPane;
 	private JPanel cardPanel;
 	private SynchController synchController;
-	private DatabaseController dbController = new DatabaseController();
+	private DatabaseController dbController;
 	private JTable tableFieldNames;
 	private JTable tableInput;
 	private JTable tableOutput;
@@ -49,6 +49,7 @@ public class MainView extends JFrame {
 	 * Create the frame.
 	 */
 	public MainView() {
+		this.dbController = new DatabaseController(MainView.this);
 		this.synchController = new SynchController(dbController);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1024, 768);
@@ -88,7 +89,7 @@ public class MainView extends JFrame {
 		comboBoxTableNames.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					dbController.tableSelected(MainView.this);
+					dbController.tableSelected();
 				}
 			}
 		});
@@ -111,17 +112,22 @@ public class MainView extends JFrame {
 		JButton btnLoad = new JButton("Betöltés");
 		btnLoad.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//dbController
+				synchController.loadTables();
 			}
 		});
 		btnLoad.setBounds(500, 184, 120, 25);
 		databasePanel.add(btnLoad);
+		
+		JLabel lblVlasszonTblt = new JLabel("Válasszon táblát!");
+		lblVlasszonTblt.setBounds(5, 10, 202, 15);
+		databasePanel.add(lblVlasszonTblt);
 		
 		JScrollPane scrollPane_1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		scrollPane_1.setBounds(15, 233, 993, 46);
 		tablePanel.add(scrollPane_1);
 		
 		tableInput = new JTable();
+		tableInput.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scrollPane_1.setViewportView(tableInput);
 		
 		JScrollPane scrollPane_2 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -129,9 +135,15 @@ public class MainView extends JFrame {
 		tablePanel.add(scrollPane_2);
 		
 		tableOutput = new JTable();
+		tableOutput.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scrollPane_2.setViewportView(tableOutput);
 		
 		JButton btnInsert = new JButton("Felvisz");
+		btnInsert.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		btnInsert.setBounds(814, 20, 140, 25);
 		tablePanel.add(btnInsert);
 		

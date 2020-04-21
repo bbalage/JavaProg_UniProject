@@ -13,10 +13,11 @@ import utilities.*;
 public class SynchController {
 	
 	private SynchOption sOpt = SynchOption.NONE;
-	private SynchPoll sPoll = null;
-	private LoginView lView = null;
-	private MainView mainView = null;
+	private SynchPoll sPoll;
+	private LoginView lView;
+	private MainView mainView;
 	private DatabaseController dbController;
+	private SynchedDataDescriptor sddesc;
 	
 	SynchController(DatabaseController dbc){
 		this.dbController = dbc;
@@ -67,6 +68,10 @@ public class SynchController {
 		}
 	}
 	
+	public void loadTables() {
+		this.sddesc = dbController.loadTable();
+	}
+	
 	private void loadSynchedSession() {
 		this.sPoll.dispose();
 		this.mainView.switchToTableCard();
@@ -76,7 +81,7 @@ public class SynchController {
 		//case SQLITE:
 			try {
 				System.out.println("Synch session with oracle loading.");
-				dbController.setupDBInterface(this.mainView);
+				dbController.setupDBInterface();
 				mainView.dbPanel(true);
 			}
 			catch(SQLException exc) {
@@ -92,11 +97,14 @@ public class SynchController {
 		switch(this.sOpt) {
 		case ORACLE:
 		//case SQLITE:
-			this.dbController.endDBSession(this.mainView);
+			this.dbController.endDBSession();
 			break;
 		}
 	}
 	
+	public void setSddesc(SynchedDataDescriptor sddesc) {
+		this.sddesc = sddesc;
+	}
 	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
