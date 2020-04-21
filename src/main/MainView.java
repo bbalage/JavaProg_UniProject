@@ -141,7 +141,7 @@ public class MainView extends JFrame {
 		JButton btnInsert = new JButton("Felvisz");
 		btnInsert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				synchController.insertAction();
 			}
 		});
 		btnInsert.setBounds(814, 20, 140, 25);

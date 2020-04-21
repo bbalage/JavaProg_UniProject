@@ -89,7 +89,6 @@ public class DatabaseController {
 	
 	public SynchedDataDescriptor loadTable() {
 		int[] selected = getSelectedFromNameTable();
-		
 		try {
 			dbapi.doSimpleQuery((String)this.mainView.getComboBoxTableNames().getSelectedItem(), selected);
 			System.out.println("Did simple query.");
@@ -129,14 +128,23 @@ public class DatabaseController {
 				}
 				else break;
 			}
+			dbapi.prepareInsert(this.sddesc.getDataTypeName(), this.sddesc.getNames().toArray(new String[0]));
 		}
 		catch(SQLException exc) {
 			sendMessage("Querying from database failed. - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			exc.printStackTrace();
 			return null;
 		}
-		
 		return this.sddesc;
+	}
+	
+	public void insert() {
+		try {
+			dbapi.baseInsert(this.sddesc.getNames(), values);
+		}
+		catch(SQLException exc) {
+			sendMessage("Insertion failed! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	private int[] getSelectedFromNameTable() {

@@ -9,11 +9,13 @@ import java.util.ArrayList;
 
 public class SynchedDataDescriptor {
 	
+	private String dataTypeName;
 	private ArrayList<Class<?>> types;
 	private ArrayList<String> names;
 	//private ArrayList<Integer> preferredWidths;
 	
-	public SynchedDataDescriptor(ArrayList<Class<?>> types, ArrayList<String> names) {
+	public SynchedDataDescriptor(String dataTypeName, ArrayList<Class<?>> types, ArrayList<String> names) {
+		this.dataTypeName = dataTypeName;
 		this.types = types;
 		this.names = names;
 	}
@@ -42,6 +44,12 @@ public class SynchedDataDescriptor {
 			}
 			this.names.add(rsmd.getColumnName(i));
 		}
+		if(this.types.size() > 0) this.dataTypeName = rsmd.getTableName(1);
+		else throw new SQLException("No columns in the given table!");
+	}
+
+	public String getDataTypeName() {
+		return dataTypeName;
 	}
 
 	public ArrayList<String> getNames() {

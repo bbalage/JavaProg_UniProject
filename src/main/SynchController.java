@@ -68,6 +68,15 @@ public class SynchController {
 		}
 	}
 	
+	public void insertAction() {
+		switch(this.sOpt) {
+		case ORACLE:
+			//this.dbController;
+			break;
+		}
+	}
+	
+	
 	public void loadTables() {
 		this.sddesc = dbController.loadTable();
 	}
@@ -100,6 +109,8 @@ public class SynchController {
 			this.dbController.endDBSession();
 			break;
 		}
+		this.sOpt = SynchOption.NONE;
+		this.sddesc = null;
 	}
 	
 	public void setSddesc(SynchedDataDescriptor sddesc) {
