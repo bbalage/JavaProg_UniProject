@@ -4,12 +4,20 @@ import javax.swing.table.DefaultTableModel;
 
 public class OutputTableModel extends DefaultTableModel {
 
-	public OutputTableModel(Object[] fieldnames, int rows) {
+	Class<?>[] types;
+	
+	public OutputTableModel(Object[] fieldnames, int rows, Class<?>[] types) {
 		super(fieldnames, rows);
+		this.types = types;
 	}
 
 	public OutputTableModel() {
 		super();
+	}
+	
+	@Override
+	public Class<?> getColumnClass(int index){
+		return types[index];
 	}
 	
 	@Override

@@ -34,7 +34,8 @@ public class SynchedDataDescriptor {
 				break;
 			case Types.TIMESTAMP:
 			case Types.TIME:
-				types.add(Timestamp.class);
+				if(rsmd.getColumnTypeName(i).equals("DATE")) types.add(Date.class);
+				else types.add(Timestamp.class);
 				break;
 			case Types.VARCHAR:
 			case Types.LONGNVARCHAR:
@@ -46,6 +47,7 @@ public class SynchedDataDescriptor {
 		}
 		if(this.types.size() > 0) this.dataTypeName = tablename;
 		else throw new SQLException("No columns in the given table!");
+		System.out.println(this);
 	}
 
 	public String getDataTypeName() {
@@ -58,6 +60,14 @@ public class SynchedDataDescriptor {
 
 	public ArrayList<Class<?>> getTypes() {
 		return types;
+	}
+
+	@Override
+	public String toString() {
+		String ret = "SynchedDataDescriptor dataTypeName= "+this.dataTypeName + "datatypes: ";
+		for(Class<?> cls : this.types)
+			ret = ret + cls.getSimpleName() + ", ";
+		return ret.substring(0, ret.length()-2);
 	}
 	
 }

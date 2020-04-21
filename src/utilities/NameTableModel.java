@@ -5,18 +5,17 @@ import javax.swing.table.DefaultTableModel;
 public class NameTableModel extends DefaultTableModel {
 
 	public NameTableModel() {
-		super(new Object[] {"Lekér", "Mezőnév"}, 0);
+		super(new Object[] {"Mezőnév", "Típus"}, 0);
 	}
 	
 	@Override
 	public boolean isCellEditable(int row, int col) {
-		if(col == 0) return true;
-		else return false;
+		return false;
 	}
 	
 	@Override
 	public Class<?> getColumnClass(int index){
-		if(index == 0) return Boolean.class;
+		if(index <= 1) return String.class;
 		else return String.class;
 	}
 }

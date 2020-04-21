@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import models.*;
@@ -76,6 +77,14 @@ public class SynchController {
 		}
 	}
 	
+	public void updateAction() {
+		switch(this.sOpt) {
+		case ORACLE:
+			this.dbController.update();
+			break;
+		}
+	}
+
 	
 	public void loadTables() {
 		this.sddesc = dbController.loadTable();
@@ -116,6 +125,14 @@ public class SynchController {
 	public void setSddesc(SynchedDataDescriptor sddesc) {
 		this.sddesc = sddesc;
 	}
+	
+	public static int getSelectedIndeces(JTable jt) throws MyAppException{
+		int[] selected = jt.getSelectedRows();
+		if(selected.length == 0) throw new MyAppException("No rows selected!");
+		if(selected.length > 1) throw new MyAppException("Too many rows selected!");
+		return selected[0];
+	}
+	
 	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);

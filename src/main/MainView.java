@@ -148,6 +148,11 @@ public class MainView extends JFrame {
 		tablePanel.add(btnInsert);
 		
 		JButton btnUpdate = new JButton("Módosít");
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.updateAction();
+			}
+		});
 		btnUpdate.setBounds(814, 60, 140, 25);
 		tablePanel.add(btnUpdate);
 		

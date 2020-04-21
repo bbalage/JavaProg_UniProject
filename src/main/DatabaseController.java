@@ -1,5 +1,6 @@
 package main;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -72,14 +73,15 @@ public class DatabaseController {
 	public void tableSelected() {
 		NameTableModel ntm = new NameTableModel();
 		this.mainView.getTableFieldNames().setModel(ntm);
-		this.mainView.getTableFieldNames().getColumnModel().getColumn(0).setPreferredWidth(40);
-		this.mainView.getTableFieldNames().getColumnModel().getColumn(1).setPreferredWidth(360);
+		this.mainView.getTableFieldNames().getColumnModel().getColumn(0).setPreferredWidth(200);
+		this.mainView.getTableFieldNames().getColumnModel().getColumn(1).setPreferredWidth(200);
 		this.mainView.getTableInput().setModel(new DefaultTableModel());
 		this.mainView.getTableOutput().setModel(new OutputTableModel());
 		try {
-			String[] fieldNames = dbapi.getColumnNamesAndType((String)this.mainView.getComboBoxTableNames().getSelectedItem());
-			for(String fn : fieldNames) {
-				ntm.addRow(new Object[] {false, fn});
+			String[] fieldNames = dbapi.getColumnNamesOrType((String)this.mainView.getComboBoxTableNames().getSelectedItem(), 0);
+			String[] fieldTypes = dbapi.getColumnNamesOrType((String)this.mainView.getComboBoxTableNames().getSelectedItem(), 1);
+			for(int i = 0; i < fieldNames.length; i++) {
+				ntm.addRow(new Object[] {fieldNames[i], fieldTypes[i]});
 			}
 		}
 		catch(SQLException exc) {
@@ -88,46 +90,11 @@ public class DatabaseController {
 	}
 	
 	public SynchedDataDescriptor loadTable() {
-		int[] selected = getSelectedFromNameTable();
 		try {
-			dbapi.doSimpleQuery((String)this.mainView.getComboBoxTableNames().getSelectedItem(), selected);
-			System.out.println("Did simple query.");
+			dbapi.doSimpleQuery((String)this.mainView.getComboBoxTableNames().getSelectedItem());
 			this.sddesc = new SynchedDataDescriptor(dbapi.getResultSetMetadata(),(String)this.mainView.getComboBoxTableNames().getSelectedItem());
-			System.out.println("Created data descriptor.");
-			Object[] names = this.sddesc.getNames().toArray(new Object[0]);
-			DefaultTableModel itm = new DefaultTableModel(names, 1);
-			OutputTableModel otm = new OutputTableModel(names, 0);
-			JTable ot = this.mainView.getTableOutput();
-			ot.setModel(otm);
-			JTable it = this.mainView.getTableInput();
-			it.setModel(itm);
-			Class<?>[] cls = this.sddesc.getTypes().toArray(new Class<?>[0]);
-			for(int i = 0; i < cls.length; i++) {
-				//System.out.println(i + ": class - " + cls[i].toString());
-				if(cls[i].equals(Integer.class)) {
-					it.getColumnModel().getColumn(i).setPreferredWidth(120);
-					ot.getColumnModel().getColumn(i).setPreferredWidth(120);
-				}
-				else if(cls[i].equals(Date.class) || cls[i].equals(Timestamp.class)) {
-					it.getColumnModel().getColumn(i).setPreferredWidth(200);
-					ot.getColumnModel().getColumn(i).setPreferredWidth(200);
-				}
-				else if(cls[i].equals(String.class)) {
-					it.getColumnModel().getColumn(i).setPreferredWidth(300);
-					ot.getColumnModel().getColumn(i).setPreferredWidth(300);
-				}
-				else {
-					it.getColumnModel().getColumn(i).setPreferredWidth(50);
-					ot.getColumnModel().getColumn(i).setPreferredWidth(50);
-				}
-			}
-			while(true) {
-				Object[] rows = dbapi.getResultSetNextRow();
-				if(rows != null) {
-					otm.addRow(rows);
-				}
-				else break;
-			}
+			buildTableFromResultSet(0);
+			buildTableFromResultSet(1);
 			dbapi.prepareInsert(this.sddesc.getDataTypeName(), this.sddesc.getNames().toArray(new String[0]));
 		}
 		catch(SQLException exc) {
@@ -145,28 +112,82 @@ public class DatabaseController {
 			for(int i = 0; i < table.getColumnCount(); i++) {
 				values.add(table.getValueAt(0, i));
 			}
-			dbapi.baseInsert(this.sddesc.getNames().toArray(new String[0]), values.toArray());
+			dbapi.baseInsert(this.sddesc.getTypes().toArray(new Class<?>[0]), values.toArray());
+			buildTableFromResultSet(2);
+			sendMessage("Insertion successful.", JOptionPane.INFORMATION_MESSAGE);
 		}
 		catch(SQLException exc) {
 			sendMessage("Insertion failed! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
-	private int[] getSelectedFromNameTable() {
-		NameTableModel nmt = (NameTableModel)this.mainView.getTableFieldNames().getModel();
-		ArrayList<Integer> selList = new ArrayList<Integer>();
-		for(int i = 0; i < nmt.getRowCount(); i++) {
-			if((Boolean)nmt.getValueAt(i, 0)) {
-				selList.add(i);
+	public void update() {
+		try {
+			JTable inputTable = this.mainView.getTableInput();
+			JTable outputTable = this.mainView.getTableOutput();
+			ArrayList<Object> inputValues = new ArrayList<Object>();
+			for(int i = 0; i < inputTable.getColumnCount(); i++) {
+				inputValues.add(inputTable.getValueAt(0, i));
+			}
+			ArrayList<Object> oldValues = new ArrayList<Object>();
+			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
+			for(int i = 0; i < outputTable.getColumnCount(); i++) {
+				Object toAdd = outputTable.getValueAt(sel, i);
+				if(toAdd instanceof BigDecimal) toAdd = ((BigDecimal)toAdd).intValue();
+				oldValues.add(toAdd);
+			}
+			dbapi.update(this.sddesc, inputValues.toArray(), oldValues.toArray());
+		}
+		catch(MyAppException exc) {
+			sendMessage("Frissítés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+		catch(SQLException exc) {
+			sendMessage("Frissítés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	
+	
+	//Mode is 0: Sets up input table.
+	//Mode is 1: Sets up output table from the current result set.
+	//Mode is 2: Sets up output table after a query on the current data type name.
+	private void buildTableFromResultSet(int mode) {
+		Object[] names = this.sddesc.getNames().toArray(new Object[0]);
+		DefaultTableModel dtm;
+		JTable jt;
+		if(mode == 0) {
+			dtm = new DefaultTableModel(names, 1);
+			jt = this.mainView.getTableInput();
+			jt.setModel(dtm);
+		}
+		else{
+			dtm = new OutputTableModel(names, 0, this.sddesc.getTypes().toArray(new Class<?>[0]));
+			jt = this.mainView.getTableOutput();
+			jt.setModel(dtm);
+		}
+		Class<?>[] cls = this.sddesc.getTypes().toArray(new Class<?>[0]);
+		for(int i = 0; i < cls.length; i++) {
+			//System.out.println(i + ": class - " + cls[i].toString());
+			if(cls[i].equals(Integer.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(120);
+			else if(cls[i].equals(Date.class) || cls[i].equals(Timestamp.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(200);
+			else if(cls[i].equals(String.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(300);
+			else jt.getColumnModel().getColumn(i).setPreferredWidth(50);
+		}
+		if(mode != 0) {
+			try {
+				if(mode == 2) dbapi.doSimpleQuery(this.sddesc.getDataTypeName());
+				while(true) {
+					Object[] rows = dbapi.getResultSetNextRow();
+					if(rows != null) {
+						dtm.addRow(rows);
+					}
+					else break;
+				}
+			}
+			catch(SQLException exc) {
+				sendMessage("A kiolvasás az adatbázisból sikertelen! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			}
 		}
-		if(selList.size() == 0) return null;
-		Integer[] integers = selList.toArray(new Integer[0]);
-		int[] ints = new int[integers.length];
-		for(int i = 0; i < ints.length; i++) {
-			ints[i] = integers[i];
-		}
-		return ints;
 	}
 	
 	public void sendMessage(String msg, int opt) {
