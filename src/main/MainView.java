@@ -80,7 +80,7 @@ public class MainView extends JFrame {
 		tablePanel.setLayout(null);
 		
 		databasePanel = new JPanel();
-		databasePanel.setBounds(37, 0, 710, 221);
+		databasePanel.setBounds(10, 0, 772, 221);
 		tablePanel.add(databasePanel);
 		databasePanel.setLayout(null);
 		
@@ -92,15 +92,16 @@ public class MainView extends JFrame {
 				}
 			}
 		});
-		comboBoxTableNames.setBounds(12, 30, 321, 24);
+		comboBoxTableNames.setBounds(5, 30, 321, 24);
 		databasePanel.add(comboBoxTableNames);
 		
 		JScrollPane scrollPane = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane.setBounds(360, 30, 321, 132);
+		scrollPane.setBounds(360, 30, 400, 132);
 		databasePanel.add(scrollPane);
 		
 		
 		tableFieldNames = new JTable();
+		tableFieldNames.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		scrollPane.setViewportView(tableFieldNames);
 		
 		JLabel lblVlasszonMezt = new JLabel("Válasszon mezőt!");
@@ -108,18 +109,23 @@ public class MainView extends JFrame {
 		databasePanel.add(lblVlasszonMezt);
 		
 		JButton btnLoad = new JButton("Betöltés");
-		btnLoad.setBounds(564, 184, 117, 25);
+		btnLoad.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				//dbController
+			}
+		});
+		btnLoad.setBounds(500, 184, 120, 25);
 		databasePanel.add(btnLoad);
 		
 		JScrollPane scrollPane_1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane_1.setBounds(37, 233, 960, 46);
+		scrollPane_1.setBounds(15, 233, 993, 46);
 		tablePanel.add(scrollPane_1);
 		
 		tableInput = new JTable();
 		scrollPane_1.setViewportView(tableInput);
 		
 		JScrollPane scrollPane_2 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane_2.setBounds(37, 293, 960, 358);
+		scrollPane_2.setBounds(15, 293, 993, 358);
 		tablePanel.add(scrollPane_2);
 		
 		tableOutput = new JTable();
@@ -138,6 +144,11 @@ public class MainView extends JFrame {
 		tablePanel.add(btnDelete);
 		
 		JButton btnKapcsolatotLezr = new JButton("Kapcsolatot lezár");
+		btnKapcsolatotLezr.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.closeSynchSession();
+			}
+		});
 		btnKapcsolatotLezr.setBounds(794, 173, 180, 25);
 		tablePanel.add(btnKapcsolatotLezr);
 		

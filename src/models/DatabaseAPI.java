@@ -31,7 +31,7 @@ public class DatabaseAPI {
 	
 	public String[] getColumnNamesAndType(String tablename) throws SQLException{
 		DatabaseMetaData dbmd = conn.getMetaData();
-		ResultSet rs = dbmd.getColumns(null, null, tablename, null);
+		ResultSet rs = dbmd.getColumns(null, this.userSpace, tablename, null);
 		ArrayList<String> columns = new ArrayList<String>();
 		while(rs.next()) {
 			columns.add(rs.getString("COLUMN_NAME") + " : " + rs.getString("TYPE_NAME"));

@@ -7,6 +7,10 @@ public class OutputTableModel extends DefaultTableModel {
 	public OutputTableModel(Object[] fieldnames, int rows) {
 		super(fieldnames, rows);
 	}
+
+	public OutputTableModel() {
+		super();
+	}
 	
 	@Override
 	public boolean isCellEditable(int row, int col) {

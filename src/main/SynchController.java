@@ -88,6 +88,16 @@ public class SynchController {
 		}
 	}
 	
+	public void closeSynchSession() {
+		switch(this.sOpt) {
+		case ORACLE:
+		//case SQLITE:
+			this.dbController.endDBSession(this.mainView);
+			break;
+		}
+	}
+	
+	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
 	}
