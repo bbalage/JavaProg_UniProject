@@ -20,7 +20,7 @@ public class SynchedDataDescriptor {
 		this.names = names;
 	}
 	
-	public SynchedDataDescriptor(ResultSetMetaData rsmd) throws SQLException{
+	public SynchedDataDescriptor(ResultSetMetaData rsmd, String tablename) throws SQLException{
 		this.types = new ArrayList<Class<?>>();
 		this.names = new ArrayList<String>();
 		for(int i = 1; i <= rsmd.getColumnCount(); i++) {
@@ -44,7 +44,7 @@ public class SynchedDataDescriptor {
 			}
 			this.names.add(rsmd.getColumnName(i));
 		}
-		if(this.types.size() > 0) this.dataTypeName = rsmd.getTableName(1);
+		if(this.types.size() > 0) this.dataTypeName = tablename;
 		else throw new SQLException("No columns in the given table!");
 	}
 

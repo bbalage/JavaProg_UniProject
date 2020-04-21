@@ -71,7 +71,7 @@ public class SynchController {
 	public void insertAction() {
 		switch(this.sOpt) {
 		case ORACLE:
-			//this.dbController;
+			this.dbController.insert();
 			break;
 		}
 	}

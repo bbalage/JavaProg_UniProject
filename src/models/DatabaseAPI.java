@@ -30,11 +30,11 @@ public class DatabaseAPI {
 	
 	public void closeConnection() throws SQLException{
 		if(conn != null) {
-			//this.insertrsmd = null;
-			//this.insertstmt = null;
-			//this.mrs = null;
-			//this.simpleQuery = null;
 			conn.close();
+			this.insertrsmd = null;
+			this.insertstmt = null;
+			this.mrs = null;
+			this.simpleQuery = null;
 		}
 	}
 	
@@ -132,26 +132,20 @@ public class DatabaseAPI {
 		String sql = "INSERT INTO " + tablename + "(";
 		insertrsmd = mrs.getMetaData();
 		int column = 1;
-		boolean[] setDefault = new boolean[insertrsmd.getColumnCount()];
-		for(int i = 0; i < setDefault.length; i++) {
-			sql = sql+rownames[i]+", ";
+		for(String names : rownames) {
+			sql = sql+names+", ";
 			for(;column<=insertrsmd.getColumnCount()+1; column++) {
 				if(column > insertrsmd.getColumnCount()) {
 					throw new SQLException("ResultSet doesn't match insert pattern.");
 				}
-				if(rownames[i].equals(insertrsmd.getColumnName(column))) {
-					setDefault[i] = false;
+				if(names.equals(insertrsmd.getColumnName(column))) {
 					break;
-				}
-				else {
-					setDefault[i] = true;
 				}
 			}
 		}
 		sql = sql.substring(0, sql.length()-2) + ") values(";
 		for(int i = 0; i < rownames.length; i++) {
-			if(setDefault[i]) sql = sql+"default, ";
-			else sql = sql+"?, ";
+			sql = sql+"?, ";
 		}
 		sql = sql.substring(0, sql.length()-2) + ")";
 		System.out.println("Insert statement to be prepared: "+sql);

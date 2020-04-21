@@ -92,7 +92,7 @@ public class DatabaseController {
 		try {
 			dbapi.doSimpleQuery((String)this.mainView.getComboBoxTableNames().getSelectedItem(), selected);
 			System.out.println("Did simple query.");
-			this.sddesc = new SynchedDataDescriptor(dbapi.getResultSetMetadata());
+			this.sddesc = new SynchedDataDescriptor(dbapi.getResultSetMetadata(),(String)this.mainView.getComboBoxTableNames().getSelectedItem());
 			System.out.println("Created data descriptor.");
 			Object[] names = this.sddesc.getNames().toArray(new Object[0]);
 			DefaultTableModel itm = new DefaultTableModel(names, 1);
@@ -140,7 +140,12 @@ public class DatabaseController {
 	
 	public void insert() {
 		try {
-			dbapi.baseInsert(this.sddesc.getNames(), values);
+			JTable table = this.mainView.getTableInput();
+			ArrayList<Object> values = new ArrayList<Object>();
+			for(int i = 0; i < table.getColumnCount(); i++) {
+				values.add(table.getValueAt(0, i));
+			}
+			dbapi.baseInsert(this.sddesc.getNames().toArray(new String[0]), values.toArray());
 		}
 		catch(SQLException exc) {
 			sendMessage("Insertion failed! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
