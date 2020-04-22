@@ -1,7 +1,6 @@
 package models;
 
 import java.sql.Timestamp;
-import java.util.Date;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -30,11 +29,11 @@ public class SynchedDataDescriptor {
 				types.add(Integer.class);
 				break;
 			case Types.DATE:
-				types.add(Date.class);
+				types.add(java.sql.Date.class);
 				break;
 			case Types.TIMESTAMP:
 			case Types.TIME:
-				if(rsmd.getColumnTypeName(i).equals("DATE")) types.add(Date.class);
+				if(rsmd.getColumnTypeName(i).equals("DATE")) types.add(java.sql.Date.class);
 				else types.add(Timestamp.class);
 				break;
 			case Types.VARCHAR:

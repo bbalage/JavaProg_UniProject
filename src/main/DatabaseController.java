@@ -5,7 +5,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Date;
 
 import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
@@ -24,6 +24,7 @@ public class DatabaseController {
 	private static final String DEFAULTURL = "193.6.5.58:1521:XE";
 	private MainView mainView;
 	private SynchedDataDescriptor sddesc;
+	private GeneralChecker gc = new GeneralChecker();
 	
 	public DatabaseController(MainView mainView) {
 		this.mainView = mainView;
@@ -107,14 +108,14 @@ public class DatabaseController {
 	
 	public void insert() {
 		try {
-			JTable table = this.mainView.getTableInput();
-			ArrayList<Object> values = new ArrayList<Object>();
-			for(int i = 0; i < table.getColumnCount(); i++) {
-				values.add(table.getValueAt(0, i));
-			}
-			dbapi.baseInsert(this.sddesc.getTypes().toArray(new Class<?>[0]), values.toArray());
+			Object[] values = getRow(this.mainView.getTableInput(), 0);
+			values = gc.formatRow(values, this.sddesc.getTypes().toArray(new Class<?>[0]));
+			dbapi.baseInsert(this.sddesc.getTypes().toArray(new Class<?>[0]), values);
 			buildTableFromResultSet(2);
 			sendMessage("Insertion successful.", JOptionPane.INFORMATION_MESSAGE);
+		}
+		catch(MyAppException exc) {
+			sendMessage("Insertion failed! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
 		catch(SQLException exc) {
 			sendMessage("Insertion failed! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
@@ -123,20 +124,12 @@ public class DatabaseController {
 	
 	public void update() {
 		try {
-			JTable inputTable = this.mainView.getTableInput();
-			JTable outputTable = this.mainView.getTableOutput();
-			ArrayList<Object> inputValues = new ArrayList<Object>();
-			for(int i = 0; i < inputTable.getColumnCount(); i++) {
-				inputValues.add(inputTable.getValueAt(0, i));
-			}
-			ArrayList<Object> oldValues = new ArrayList<Object>();
 			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
-			for(int i = 0; i < outputTable.getColumnCount(); i++) {
-				Object toAdd = outputTable.getValueAt(sel, i);
-				if(toAdd instanceof BigDecimal) toAdd = ((BigDecimal)toAdd).intValue();
-				oldValues.add(toAdd);
-			}
-			dbapi.update(this.sddesc, inputValues.toArray(), oldValues.toArray());
+			Object[] inputValues = getRow(this.mainView.getTableInput(), 0);
+			Object[] oldValues = getRow(this.mainView.getTableOutput(), sel);
+			inputValues = gc.formatRow(inputValues, sddesc.getTypes().toArray(new Class<?>[0]));
+			oldValues = gc.formatRow(oldValues, sddesc.getTypes().toArray(new Class<?>[0]));
+			dbapi.update(this.sddesc, inputValues, oldValues);
 		}
 		catch(MyAppException exc) {
 			sendMessage("Frissítés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
@@ -156,7 +149,7 @@ public class DatabaseController {
 		DefaultTableModel dtm;
 		JTable jt;
 		if(mode == 0) {
-			dtm = new DefaultTableModel(names, 1);
+			dtm = new InputTableModel(names);
 			jt = this.mainView.getTableInput();
 			jt.setModel(dtm);
 		}
@@ -169,7 +162,7 @@ public class DatabaseController {
 		for(int i = 0; i < cls.length; i++) {
 			//System.out.println(i + ": class - " + cls[i].toString());
 			if(cls[i].equals(Integer.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(120);
-			else if(cls[i].equals(Date.class) || cls[i].equals(Timestamp.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(200);
+			else if(cls[i].equals(java.util.Date.class) || cls[i].equals(Timestamp.class) || cls[i].equals(java.sql.Date.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(200);
 			else if(cls[i].equals(String.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(300);
 			else jt.getColumnModel().getColumn(i).setPreferredWidth(50);
 		}
@@ -179,6 +172,7 @@ public class DatabaseController {
 				while(true) {
 					Object[] rows = dbapi.getResultSetNextRow();
 					if(rows != null) {
+						
 						dtm.addRow(rows);
 					}
 					else break;
@@ -188,6 +182,14 @@ public class DatabaseController {
 				sendMessage("A kiolvasás az adatbázisból sikertelen! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			}
 		}
+	}
+	
+	public Object[] getRow(JTable jt, int row) {
+		ArrayList<Object> oblist = new ArrayList<Object>();
+		for(int i = 0; i < jt.getColumnCount(); i++) {
+			oblist.add(jt.getValueAt(row, i));
+		}
+		return oblist.toArray();
 	}
 	
 	public void sendMessage(String msg, int opt) {

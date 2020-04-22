@@ -88,8 +88,9 @@ public class DatabaseAPI {
 				insertstmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 				continue;
 			}
-			if(rowtypes[i].equals(Integer.class)) insertstmt.setInt(i+1, Integer.parseInt(((String)values[i])));
-			if(rowtypes[i].equals(java.util.Date.class) || rowtypes[i].equals(Timestamp.class)) insertstmt.setDate(i+1, Date.valueOf((String)values[i]));
+			if(rowtypes[i].equals(Integer.class)) insertstmt.setInt(i+1, (Integer)values[i]);
+			if(rowtypes[i].equals(java.sql.Date.class)) insertstmt.setDate(i+1, (java.sql.Date)values[i]);
+			if(rowtypes[i].equals(Timestamp.class)) insertstmt.setTimestamp(i+1, (Timestamp)values[i]);
 			if(rowtypes[i].equals(String.class)) insertstmt.setString(i+1, (String)values[i]);
 		}
 		insertstmt.execute();
@@ -153,17 +154,17 @@ public class DatabaseAPI {
 				updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 			}*/
 			if(rowtypes[i].equals(Integer.class)) {
-				if(newvalues[i] != null) updatestmt.setInt(i+1, Integer.parseInt(((String)newvalues[i])));
+				if(newvalues[i] != null) updatestmt.setInt(i+1, (Integer)newvalues[i]);
 				else updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 				if(oldvalues[i] != null) updatestmt.setInt(j++, (Integer)oldvalues[i]);
 			}
-			else if(rowtypes[i].equals(java.util.Date.class)) {
-				if(newvalues[i] != null) updatestmt.setDate(i+1, Date.valueOf((String)newvalues[i]));
+			else if(rowtypes[i].equals(java.sql.Date.class)) {
+				if(newvalues[i] != null) updatestmt.setDate(i+1, (Date)newvalues[i]);
 				else updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 				if(oldvalues[i] != null) updatestmt.setDate(j++, (Date)oldvalues[i]);
 			}
 			else if(rowtypes[i].equals(Timestamp.class)) {
-				if(newvalues[i] != null) updatestmt.setTimestamp(i+1, Timestamp.valueOf((String)newvalues[i]));
+				if(newvalues[i] != null) updatestmt.setTimestamp(i+1, (Timestamp)newvalues[i]);
 				else updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 				if(oldvalues[i] != null) updatestmt.setTimestamp(j++, (Timestamp)oldvalues[i]);
 			}
