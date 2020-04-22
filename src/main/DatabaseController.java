@@ -154,7 +154,7 @@ public class DatabaseController {
 			jt.setModel(dtm);
 		}
 		else{
-			dtm = new OutputTableModel(names, 0, this.sddesc.getTypes().toArray(new Class<?>[0]));
+			dtm = new OutputTableModel(names, 0);
 			jt = this.mainView.getTableOutput();
 			jt.setModel(dtm);
 		}
@@ -172,11 +172,14 @@ public class DatabaseController {
 				while(true) {
 					Object[] rows = dbapi.getResultSetNextRow();
 					if(rows != null) {
-						
+						rows = gc.formatRow(rows, this.sddesc.getTypes().toArray(new Class<?>[0]));
 						dtm.addRow(rows);
 					}
 					else break;
 				}
+			}
+			catch(MyAppException exc) {
+				sendMessage("A kiolvasás az adatbázisból sikertelen! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			}
 			catch(SQLException exc) {
 				sendMessage("A kiolvasás az adatbázisból sikertelen! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
@@ -193,6 +196,6 @@ public class DatabaseController {
 	}
 	
 	public void sendMessage(String msg, int opt) {
-		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
+		JOptionPane.showMessageDialog(null, msg, "Adatbázis kontroll üzenet.", opt);
 	}
 }

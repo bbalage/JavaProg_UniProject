@@ -4,21 +4,21 @@ import javax.swing.table.DefaultTableModel;
 
 public class OutputTableModel extends DefaultTableModel {
 
-	Class<?>[] types;
+	//Class<?>[] types;
 	
-	public OutputTableModel(Object[] fieldnames, int rows, Class<?>[] types) {
+	public OutputTableModel(Object[] fieldnames, int rows) {
 		super(fieldnames, rows);
-		this.types = types;
+		//this.types = types;
 	}
 
 	public OutputTableModel() {
 		super();
 	}
 	
-	@Override
+	/*@Override
 	public Class<?> getColumnClass(int index){
 		return types[index];
-	}
+	}*/
 	
 	@Override
 	public boolean isCellEditable(int row, int col) {

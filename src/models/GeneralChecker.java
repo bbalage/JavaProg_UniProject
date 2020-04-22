@@ -1,6 +1,7 @@
 package models;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,6 +46,14 @@ public class GeneralChecker {
 			else if(row[i] instanceof BigDecimal) ret[i] = ((BigDecimal)row[i]).intValue();
 			else if(row[i] instanceof Timestamp && cls[i].equals(java.sql.Date.class)) ret[i] = new java.sql.Date(((Timestamp)row[i]).getTime());
 			else if(row[i] instanceof Timestamp && cls[i].equals(java.util.Date.class)) ret[i] = new java.util.Date(((Timestamp)row[i]).getTime());
+			else if(row[i] instanceof oracle.sql.TIMESTAMP && cls[i].equals(java.sql.Timestamp.class)) {
+				try {
+					ret[i] = new java.sql.Timestamp(((oracle.sql.TIMESTAMP)row[i]).dateValue().getTime());
+				}
+				catch(SQLException exc) {
+					throw new MyAppException("Conversion of Oracle timestamp failed: "+exc.getMessage());
+				}
+			}
 			else throw new MyAppException("Input type was none of types we are ready to handle: "+row[i].getClass().getCanonicalName() + " at "+ i);
 		}
 		return ret;
