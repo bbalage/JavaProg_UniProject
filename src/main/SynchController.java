@@ -1,8 +1,10 @@
 package main;
 
+import java.io.File;
 import java.sql.SQLException;
 
 import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -25,10 +27,18 @@ public class SynchController {
 	}
 	
 	public void synchWithType(SynchOption sOpt) {
-		if(sOpt == SynchOption.ORACLE) {
+		switch(sOpt) {
+		case ORACLE:
 			synchWithOracle();
+			break;
+		case SQLITE:
+			synchWithSQLite();
+			break;
+		case NONE:
+			sendMessage("Miscarried functioning! Synchoption was NONE! Revise program!", JOptionPane.ERROR_MESSAGE);
+			break;
 		}
-	}
+		}
 	
 	public void startSynchSession(JFrame owner) {
 		this.mainView = (MainView) owner;
@@ -45,11 +55,28 @@ public class SynchController {
 		this.lView.dispose();
 	}
 	
-	public void synchWithOracle() {
+	private void synchWithSQLite() {
+		JFileChooser jfc = new JFileChooser();
+		jfc.setDialogTitle("Válassza ki a lokális SQLite adatbázist, amit kezelni szeretne!");
+		int ret = jfc.showOpenDialog(this.sPoll);
+		boolean ok = false;
+		if(ret == JFileChooser.APPROVE_OPTION) {
+			File db = jfc.getSelectedFile();
+			ok = dbController.connectToSQLite(db);
+		}
+		if(ok) {
+			sendMessage("Sikeres kapcsolódás az SQLite adatbázissal.", JOptionPane.INFORMATION_MESSAGE);
+			this.sOpt = SynchOption.SQLITE;
+			this.sPoll.dispose();
+		}
+	}
+	
+	private void synchWithOracle() {
 		this.lView = new LoginView(sPoll, SynchController.this);
 		lView.setVisible(true);
 	}
 	
+	//Where is sPoll disposed of?
 	public void loginToOracle() {
 		String username = lView.getTextUsername().getText();
 		String password = charsToString(lView.getPasswordField().getPassword());

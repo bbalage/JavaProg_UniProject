@@ -1,0 +1,16 @@
+A feladatban megadott kötelezően kezelendő adatszerkezet:
+
+"7. Társasház: lakás azonosító, pontos cím, terület, közös költség"
+
+Ezt ki kell egészíteni dátum mezővel, hogy legalább 5 mező legyen, és szerepeljen dátum. Így tehát legyen a dátum az építés ideje.
+
+Az adatszerkezet sql kreáló parancsa:
+
+CREATE TABLE TARSASHAZ(ID NUMBER(5) PRIMARY KEY, CIM VARCHAR(200), TERULET NUMBER(5), KOZOS_KOLTSEG NUMBER(8), EPITES_IDEJE DATE);
+
+Tesztadatok legyenek:
+INSERT INTO TARSASHAZ VALUES(1, '3600 Ózd, Fekete tenyér utca 93.', 40, 65000, date('1988-03-03'));
+INSERT INTO TARSASHAZ VALUES(2, '3515 Miskolc, Rakott krumli köz 20.', 20, 60000, date('1970-06-05'));
+INSERT INTO TARSASHAZ VALUES(3, '3515 Miskolc, Bagoly Károly út 67.', 45, 65000, date('1982-06-03'));
+INSERT INTO TARSASHAZ VALUES(4, '3615 Miskolc, Holló utca 10.', 80, 105000, date('2013-08-31'));
+INSERT INTO TARSASHAZ VALUES(5, '3615 Miskolc, Trágár utca 102.', 18, 35000, date('1990-09-25'));

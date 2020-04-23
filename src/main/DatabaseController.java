@@ -1,5 +1,6 @@
 package main;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -27,6 +28,21 @@ public class DatabaseController {
 	
 	public DatabaseController(MainView mainView) {
 		this.mainView = mainView;
+	}
+	
+	public boolean connectToSQLite(File db) {
+		try {
+			dbapi.connectToSQLite(db);
+		}
+		catch(SQLException exc) {
+			sendMessage("Nem sikerült csatlakozni az SQLite adatbázisra: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		catch(ClassNotFoundException exc) {
+			sendMessage("Nem találtunk drivert az SQLite adatbázishoz: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
 	}
 	
 	public boolean connectToOracle(String username, String password, String workspace) {

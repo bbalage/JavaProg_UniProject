@@ -1,5 +1,6 @@
 package models;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.Date;
@@ -15,13 +16,24 @@ import java.util.ArrayList;
 
 public class DatabaseAPI {
 
-	private Connection conn; //193.6.5.58:1521:XE
+	private Connection conn;
 	private static final String DEFAULTURL = "193.6.5.58:1521:XE";
 	private String userSpace = null;
 	private ResultSet mrs = null;
 	private Statement simpleQuery;
 	private PreparedStatement insertstmt;
 	private ResultSetMetaData insertrsmd;
+	/*
+		insertrsmd is problem source: desynchronization between resultset and synched data descriptor might cause crash (bad network connection).
+		Checking synchronization or using only one should be implemented in further versions.
+	*/
+	public void connectToSQLite(File db) throws ClassNotFoundException, SQLException{
+		String URL = "jdbc:sqlite:"+db.getAbsolutePath();
+		Class.forName("org.sqlite.JDBC");
+		conn = DriverManager.getConnection(URL);
+		this.userSpace = null;
+		simpleQuery = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+	}
 	
 	public void connectToOracle(String username, String password, String workspace) throws SQLException, ClassNotFoundException{
 		connectToOracle(username, password, workspace, DEFAULTURL);
@@ -88,8 +100,6 @@ public class DatabaseAPI {
 	}
 	
 	public void baseInsert(Class<?>[] rowtypes, Object[] values) throws SQLException{
-		//if(values == null) System.out.println("Insert array is null.");
-		
 		for(int i = 0; i < rowtypes.length; i++) {
 			if(values[i] == null) insertstmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 			else if(rowtypes[i].equals(Integer.class)) insertstmt.setInt(i+1, (Integer)values[i]);
