@@ -141,7 +141,7 @@ public class MainView extends JFrame {
 		JButton btnInsert = new JButton("Felvisz");
 		btnInsert.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				synchController.insertAction();
+				synchController.dataModifyingAction(0);
 			}
 		});
 		btnInsert.setBounds(814, 20, 140, 25);
@@ -150,7 +150,7 @@ public class MainView extends JFrame {
 		JButton btnUpdate = new JButton("Módosít");
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				synchController.updateAction();
+				synchController.dataModifyingAction(1);
 			}
 		});
 		btnUpdate.setBounds(814, 60, 140, 25);
@@ -159,7 +159,7 @@ public class MainView extends JFrame {
 		JButton btnDelete = new JButton("Töröl");
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				synchController.deleteAction();
+				synchController.dataModifyingAction(2);
 			}
 		});
 		btnDelete.setBounds(814, 100, 140, 25);

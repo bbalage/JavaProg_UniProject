@@ -210,7 +210,9 @@ public class DatabaseController {
 	public Object[] getRow(JTable jt, int row) {
 		ArrayList<Object> oblist = new ArrayList<Object>();
 		for(int i = 0; i < jt.getColumnCount(); i++) {
-			oblist.add(jt.getValueAt(row, i).toString());
+			Object obj = jt.getValueAt(row, i);
+			if(obj != null) obj = obj.toString();
+			oblist.add(obj);
 		}
 		return oblist.toArray();
 	}

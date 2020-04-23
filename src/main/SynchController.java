@@ -70,30 +70,21 @@ public class SynchController {
 		}
 	}
 	
-	public void insertAction() {
+	public void dataModifyingAction(int type) {
+		if(this.mainView.getTableInput().getColumnCount() <= 0 || this.mainView.getTableOutput().getColumnCount() <= 0) {
+			sendMessage("No data structure present to execute the action on.", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		switch(this.sOpt) {
 		case ORACLE:
-			this.dbController.insert();
+			switch(type) {
+			case 0:	this.dbController.insert(); break;
+			case 1:	this.dbController.update(); break;
+			case 2: this.dbController.delete(); break;
+			}
 			break;
 		}
 	}
-	
-	public void updateAction() {
-		switch(this.sOpt) {
-		case ORACLE:
-			this.dbController.update();
-			break;
-		}
-	}
-	
-	public void deleteAction() {
-		switch(this.sOpt) {
-		case ORACLE:
-			this.dbController.delete();
-			break;
-		}
-	}
-
 	
 	public void loadTables() {
 		this.sddesc = dbController.loadTable();

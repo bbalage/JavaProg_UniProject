@@ -88,6 +88,8 @@ public class DatabaseAPI {
 	}
 	
 	public void baseInsert(Class<?>[] rowtypes, Object[] values) throws SQLException{
+		//if(values == null) System.out.println("Insert array is null.");
+		
 		for(int i = 0; i < rowtypes.length; i++) {
 			if(values[i] == null) insertstmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 			else if(rowtypes[i].equals(Integer.class)) insertstmt.setInt(i+1, (Integer)values[i]);
@@ -107,6 +109,7 @@ public class DatabaseAPI {
 		sql = sql.substring(0, sql.length()-2) + ")";
 		System.out.println("Insert statement to be prepared: "+sql);
 		insertstmt = conn.prepareStatement(sql);
+		insertrsmd = mrs.getMetaData();
 	}
 	
 	public void update(SynchedDataDescriptor sddesc, Object[] newvalues, Object[] oldvalues) throws SQLException{
