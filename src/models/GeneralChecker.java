@@ -14,10 +14,10 @@ public class GeneralChecker {
 	private SimpleDateFormat[] sdfts = new SimpleDateFormat[8];
 	
 	{
-		this.sdfs[0] = new SimpleDateFormat("yyyy.mm.dd");
-		this.sdfs[1] = new SimpleDateFormat("yyyy.mm.dd.");
-		this.sdfs[2] = new SimpleDateFormat("yyyy/mm/dd");
-		this.sdfs[3] = new SimpleDateFormat("yyyy-mm-dd");
+		this.sdfs[0] = new SimpleDateFormat("yyyy.MM.dd");
+		this.sdfs[1] = new SimpleDateFormat("yyyy.MM.dd.");
+		this.sdfs[2] = new SimpleDateFormat("yyyy/MM/dd");
+		this.sdfs[3] = new SimpleDateFormat("yyyy-MM-dd");
 		this.sdfts[0] = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss.SS");
 		this.sdfts[1] = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss.S");
 		this.sdfts[2] = new SimpleDateFormat("yyyy.MM.dd hh:mm:ss");

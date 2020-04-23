@@ -123,7 +123,7 @@ public class MainView extends JFrame {
 		databasePanel.add(lblVlasszonTblt);
 		
 		JScrollPane scrollPane_1 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane_1.setBounds(15, 233, 993, 46);
+		scrollPane_1.setBounds(15, 233, 993, 60);
 		tablePanel.add(scrollPane_1);
 		
 		tableInput = new JTable();
@@ -131,7 +131,7 @@ public class MainView extends JFrame {
 		scrollPane_1.setViewportView(tableInput);
 		
 		JScrollPane scrollPane_2 = new JScrollPane(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		scrollPane_2.setBounds(15, 293, 993, 358);
+		scrollPane_2.setBounds(15, 300, 993, 358);
 		tablePanel.add(scrollPane_2);
 		
 		tableOutput = new JTable();
