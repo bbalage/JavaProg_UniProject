@@ -21,7 +21,6 @@ import utilities.*;
 public class DatabaseController {
 
 	private DatabaseAPI dbapi = new DatabaseAPI();
-	private static final String DEFAULTURL = "193.6.5.58:1521:XE";
 	private MainView mainView;
 	private SynchedDataDescriptor sddesc;
 	private GeneralChecker gc = new GeneralChecker();
@@ -30,14 +29,19 @@ public class DatabaseController {
 		this.mainView = mainView;
 	}
 	
-	public boolean connectToOracle(String username, String password) {
-		return connectToOracle(username, password, DEFAULTURL);
+	public boolean connectToOracle(String username, String password, String workspace) {
+		return connectToOracle(username, password, workspace, null, true);
 	}
 	
-	public boolean connectToOracle(String username, String password, String URL) {
+	public boolean connectToOracle(String username, String password, String workspace, String URL) {
+		return connectToOracle(username, password, workspace, URL, false);
+	}
+	
+	public boolean connectToOracle(String username, String password, String workspace, String URL, boolean usedef) {
 		System.out.println("DatabaseController.");
 		try {
-			dbapi.connectToOracle(username, password, URL);
+			if(usedef) dbapi.connectToOracle(username, password, workspace);
+			else dbapi.connectToOracle(username, password, workspace, URL);
 		}
 		catch(SQLException exc) {
 			sendMessage("Nem sikerült a login az Oracle adatbázisra: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);

@@ -19,6 +19,12 @@ public class LoginView extends JDialog {
 	private JButton btnHelp;
 	private JCheckBox checkBoxDefaultServer;
 	private JPasswordField passwordField;
+	private JTextField textWorkspace;
+	private JCheckBox checkBoxWorkspace;
+
+	public JCheckBox getCheckBoxWorkspace() {
+		return checkBoxWorkspace;
+	}
 
 	JTextField getTextURL() {
 		return textURL;
@@ -41,7 +47,7 @@ public class LoginView extends JDialog {
 	 */
 	public LoginView(JDialog owner, SynchController synchController) {
 		super(owner, "Bejelentkezés Oracle adatbázisba.", true);
-		setBounds(100, 100, 450, 350);
+		setBounds(100, 100, 450, 450);
 		getContentPane().setLayout(null);
 		
 		textURL = new JTextField();
@@ -50,21 +56,21 @@ public class LoginView extends JDialog {
 		textURL.setColumns(10);
 		
 		textUsername = new JTextField();
-		textUsername.setBounds(41, 95, 279, 19);
+		textUsername.setBounds(41, 120, 279, 19);
 		textUsername.setText("H20_N5IF3V");
 		getContentPane().add(textUsername);
 		textUsername.setColumns(10);
 		
-		JLabel lblUrl = new JLabel("URL:");
+		JLabel lblUrl = new JLabel("Adatbázis azonosító (URL és leírók):");
 		lblUrl.setBounds(41, 10, 279, 15);
 		getContentPane().add(lblUrl);
 		
 		JLabel lblFelhasznlnv = new JLabel("Felhasználónév:");
-		lblFelhasznlnv.setBounds(41, 70, 279, 15);
+		lblFelhasznlnv.setBounds(41, 95, 279, 15);
 		getContentPane().add(lblFelhasznlnv);
 		
 		JLabel lblJelsz = new JLabel("Jelszó:");
-		lblJelsz.setBounds(41, 130, 279, 15);
+		lblJelsz.setBounds(41, 258, 279, 15);
 		getContentPane().add(lblJelsz);
 		
 		btnLogin = new JButton("Bejelentkezés");
@@ -73,7 +79,7 @@ public class LoginView extends JDialog {
 				synchController.loginToOracle();
 			}
 		});
-		btnLogin.setBounds(46, 230, 149, 25);
+		btnLogin.setBounds(41, 330, 149, 25);
 		getContentPane().add(btnLogin);
 		
 		btnCancel = new JButton("Mégse");
@@ -82,20 +88,37 @@ public class LoginView extends JDialog {
 				synchController.cancelSynchWithOracle();
 			}
 		});
-		btnCancel.setBounds(239, 230, 149, 25);
+		btnCancel.setBounds(234, 330, 149, 25);
 		getContentPane().add(btnCancel);
 		
 		checkBoxDefaultServer = new JCheckBox("Használd az alapértelmezett Oracle szervert!");
-		checkBoxDefaultServer.setBounds(41, 182, 387, 23);
+		checkBoxDefaultServer.setBounds(41, 60, 387, 23);
 		getContentPane().add(checkBoxDefaultServer);
 		
 		btnHelp = new JButton("Help");
-		btnHelp.setBounds(271, 283, 117, 25);
+		btnHelp.setBounds(266, 383, 117, 25);
 		getContentPane().add(btnHelp);
 		
 		passwordField = new JPasswordField();
-		passwordField.setBounds(41, 155, 175, 19);
+		passwordField.setBounds(41, 283, 175, 19);
 		getContentPane().add(passwordField);
+		
+		JLabel lblWorkspace = new JLabel("Workspace:");
+		lblWorkspace.setBounds(41, 145, 117, 15);
+		getContentPane().add(lblWorkspace);
+		
+		textWorkspace = new JTextField();
+		textWorkspace.setColumns(10);
+		textWorkspace.setBounds(41, 170, 279, 19);
+		getContentPane().add(textWorkspace);
+		
+		checkBoxWorkspace = new JCheckBox("<html>Használd a felhasználónevet workspace</br>\nazonosítónak!</html>");
+		checkBoxWorkspace.setBounds(41, 190, 387, 48);
+		getContentPane().add(checkBoxWorkspace);
 
+	}
+
+	public JTextField getTextWorkspace() {
+		return textWorkspace;
 	}
 }

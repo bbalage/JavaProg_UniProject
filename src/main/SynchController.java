@@ -50,16 +50,17 @@ public class SynchController {
 		lView.setVisible(true);
 	}
 	
-	public void loginToOracle(/*JTextField usernameField, JTextField passwordField, JTextField URLField, JCheckBox defser*/) {
+	public void loginToOracle() {
 		String username = lView.getTextUsername().getText();
 		String password = charsToString(lView.getPasswordField().getPassword());
+		String workspace = lView.getCheckBoxWorkspace().isSelected() ? username : lView.getTextWorkspace().getText();
 		boolean ok;
 		if(lView.getCheckBoxDefaultServer().isSelected()) {
-			ok = dbController.connectToOracle(username, password);
+			ok = dbController.connectToOracle(username, password, workspace);
 		}
 		else {
 			String URL = lView.getTextURL().getText();
-			ok = dbController.connectToOracle(username, password, URL);
+			ok = dbController.connectToOracle(username, password, workspace, URL);
 		}
 		if(ok) {
 			sendMessage("Sikeres bejelentkezés az Oracle adatbázisra.", JOptionPane.INFORMATION_MESSAGE);

@@ -16,16 +16,21 @@ import java.util.ArrayList;
 public class DatabaseAPI {
 
 	private Connection conn; //193.6.5.58:1521:XE
+	private static final String DEFAULTURL = "193.6.5.58:1521:XE";
 	private String userSpace = null;
 	private ResultSet mrs = null;
 	private Statement simpleQuery;
 	private PreparedStatement insertstmt;
 	private ResultSetMetaData insertrsmd;
 	
-	public void connectToOracle(String username, String password, String URL) throws SQLException, ClassNotFoundException{
+	public void connectToOracle(String username, String password, String workspace) throws SQLException, ClassNotFoundException{
+		connectToOracle(username, password, workspace, DEFAULTURL);
+	}
+	
+	public void connectToOracle(String username, String password, String workspace, String URL) throws SQLException, ClassNotFoundException{
 		Class.forName("oracle.jdbc.driver.OracleDriver");
 		conn = DriverManager.getConnection("jdbc:oracle:thin:@"+URL,username,password);
-		this.userSpace = username;
+		this.userSpace = workspace;
 		simpleQuery = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 	}
 	
