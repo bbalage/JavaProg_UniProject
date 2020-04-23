@@ -36,19 +36,25 @@ public class GeneralChecker {
 				ret[i] = row[i];
 			}
 			else if(row[i] instanceof String) {
-				if(cls[i].equals(Integer.class)) ret[i] = Integer.parseInt(row[i].toString());
+				if(cls[i].equals(Integer.class)) try{
+					ret[i] = Integer.parseInt(row[i].toString());
+				}
+				catch(NumberFormatException exc) {
+					throw new MyAppException("Could not convert to number: "+exc.getMessage());
+				}
 				else if(cls[i].equals(String.class)) ret[i] = row[i];
-				else if(cls[i].equals(Timestamp.class)) ret[i] = convertToTimestamp(row[i].toString());
-				else if(cls[i].equals(java.util.Date.class)) ret[i] = convertToDate(row[i].toString());
+				else if(cls[i].equals(Timestamp.class)) {ret[i] = convertToTimestamp(row[i].toString()); System.out.println("Timestamp string: "+row[i]+"; timestamp: "+ret[i]);}
+				else if(cls[i].equals(java.util.Date.class)) {ret[i] = convertToDate(row[i].toString()); System.out.println("Date string: "+row[i]+"; date: "+ret[i]);}
 				else if(cls[i].equals(java.sql.Date.class)) ret[i] = convertToSQLDate(row[i].toString());
 				else throw new MyAppException("Type of the row was not the application can convert: "+cls[i].getCanonicalName() + " at "+ i);
 			}
 			else if(row[i] instanceof BigDecimal) ret[i] = ((BigDecimal)row[i]).intValue();
-			else if(row[i] instanceof Timestamp && cls[i].equals(java.sql.Date.class)) ret[i] = new java.sql.Date(((Timestamp)row[i]).getTime());
-			else if(row[i] instanceof Timestamp && cls[i].equals(java.util.Date.class)) ret[i] = new java.util.Date(((Timestamp)row[i]).getTime());
+			else if(row[i] instanceof Timestamp && cls[i].equals(java.sql.Date.class)) {ret[i] = new java.sql.Date(((Timestamp)row[i]).getTime()); System.out.println("Timestamp: "+row[i]+"; sqldate: "+ret[i]);}
+			else if(row[i] instanceof Timestamp && cls[i].equals(java.util.Date.class)) {ret[i] = new java.util.Date(((Timestamp)row[i]).getTime()); System.out.println("Timestamp: "+row[i]+"; utildate: "+ret[i]);}
 			else if(row[i] instanceof oracle.sql.TIMESTAMP && cls[i].equals(java.sql.Timestamp.class)) {
 				try {
 					ret[i] = new java.sql.Timestamp(((oracle.sql.TIMESTAMP)row[i]).dateValue().getTime());
+					System.out.println("Oracle timestamp: "+row[i]+"; timestamp: "+ret[i]);
 				}
 				catch(SQLException exc) {
 					throw new MyAppException("Conversion of Oracle timestamp failed: "+exc.getMessage());

@@ -157,6 +157,11 @@ public class MainView extends JFrame {
 		tablePanel.add(btnUpdate);
 		
 		JButton btnDelete = new JButton("Töröl");
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.deleteAction();
+			}
+		});
 		btnDelete.setBounds(814, 100, 140, 25);
 		tablePanel.add(btnDelete);
 		

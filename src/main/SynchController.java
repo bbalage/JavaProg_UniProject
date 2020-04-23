@@ -84,6 +84,14 @@ public class SynchController {
 			break;
 		}
 	}
+	
+	public void deleteAction() {
+		switch(this.sOpt) {
+		case ORACLE:
+			this.dbController.delete();
+			break;
+		}
+	}
 
 	
 	public void loadTables() {

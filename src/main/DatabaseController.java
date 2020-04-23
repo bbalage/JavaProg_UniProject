@@ -130,6 +130,7 @@ public class DatabaseController {
 			inputValues = gc.formatRow(inputValues, sddesc.getTypes().toArray(new Class<?>[0]));
 			oldValues = gc.formatRow(oldValues, sddesc.getTypes().toArray(new Class<?>[0]));
 			dbapi.update(this.sddesc, inputValues, oldValues);
+			buildTableFromResultSet(2);
 		}
 		catch(MyAppException exc) {
 			sendMessage("Frissítés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
@@ -139,7 +140,22 @@ public class DatabaseController {
 		}
 	}
 	
-	
+	public void delete() {
+		try {
+			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
+			Object [] conds = getRow(this.mainView.getTableOutput(), sel);
+			conds = gc.formatRow(conds, sddesc.getTypes().toArray(new Class<?>[0]));
+			dbapi.delete(this.sddesc, conds);
+			buildTableFromResultSet(2);
+		}
+		catch(MyAppException exc) {
+			sendMessage("Törlés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+		catch(SQLException exc) {
+			sendMessage("Törlés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+		
+	}
 	
 	//Mode is 0: Sets up input table.
 	//Mode is 1: Sets up output table from the current result set.
@@ -190,7 +206,7 @@ public class DatabaseController {
 	public Object[] getRow(JTable jt, int row) {
 		ArrayList<Object> oblist = new ArrayList<Object>();
 		for(int i = 0; i < jt.getColumnCount(); i++) {
-			oblist.add(jt.getValueAt(row, i));
+			oblist.add(jt.getValueAt(row, i).toString());
 		}
 		return oblist.toArray();
 	}

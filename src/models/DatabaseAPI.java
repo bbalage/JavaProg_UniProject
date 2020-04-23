@@ -84,34 +84,18 @@ public class DatabaseAPI {
 	
 	public void baseInsert(Class<?>[] rowtypes, Object[] values) throws SQLException{
 		for(int i = 0; i < rowtypes.length; i++) {
-			if(values[i] == null) {
-				insertstmt.setNull(i+1, insertrsmd.getColumnType(i+1));
-				continue;
-			}
-			if(rowtypes[i].equals(Integer.class)) insertstmt.setInt(i+1, (Integer)values[i]);
-			if(rowtypes[i].equals(java.sql.Date.class)) insertstmt.setDate(i+1, (java.sql.Date)values[i]);
-			if(rowtypes[i].equals(Timestamp.class)) insertstmt.setTimestamp(i+1, (Timestamp)values[i]);
-			if(rowtypes[i].equals(String.class)) insertstmt.setString(i+1, (String)values[i]);
+			if(values[i] == null) insertstmt.setNull(i+1, insertrsmd.getColumnType(i+1));
+			else if(rowtypes[i].equals(Integer.class)) insertstmt.setInt(i+1, (Integer)values[i]);
+			else if(rowtypes[i].equals(java.sql.Date.class)) insertstmt.setDate(i+1, (java.sql.Date)values[i]);
+			else if(rowtypes[i].equals(Timestamp.class)) insertstmt.setTimestamp(i+1, (Timestamp)values[i]);
+			else if(rowtypes[i].equals(String.class)) insertstmt.setString(i+1, (String)values[i]);
+			else throw new SQLException("Bind value none of the types we are ready to handle: "+rowtypes[i].getCanonicalName());
 		}
 		insertstmt.execute();
 	}
 	
 	public void prepareInsert(String tablename, String[] rownames) throws SQLException{
-		String sql = "INSERT INTO " + tablename + "(";
-		insertrsmd = mrs.getMetaData();
-		int column = 1;
-		for(String names : rownames) {
-			sql = sql+names+", ";
-			for(;column<=insertrsmd.getColumnCount()+1; column++) {
-				if(column > insertrsmd.getColumnCount()) {
-					throw new SQLException("ResultSet doesn't match insert pattern.");
-				}
-				if(names.equals(insertrsmd.getColumnName(column))) {
-					break;
-				}
-			}
-		}
-		sql = sql.substring(0, sql.length()-2) + ") values(";
+		String sql = "INSERT INTO " + tablename + " values(";
 		for(int i = 0; i < rownames.length; i++) {
 			sql = sql+"?, ";
 		}
@@ -123,17 +107,8 @@ public class DatabaseAPI {
 	public void update(SynchedDataDescriptor sddesc, Object[] newvalues, Object[] oldvalues) throws SQLException{
 		String sql = "UPDATE " + sddesc.getDataTypeName() + " SET ";
 		String[] rownames = sddesc.getNames().toArray(new String[0]);
-		ResultSetMetaData updatersmd = mrs.getMetaData();
-		for(int i = 0, column = 1; i < rownames.length; i++) {
+		for(int i = 0; i < rownames.length; i++) {
 			sql = sql + rownames[i] + "= ?, ";
-			for(;column<=updatersmd.getColumnCount()+1; column++) {
-				if(column > updatersmd.getColumnCount()) {
-					throw new SQLException("ResultSet doesn't match input pattern.");
-				}
-				if(rownames[i].equals(updatersmd.getColumnName(column))) {
-					break;
-				}
-			}
 		}
 		sql = sql.substring(0,sql.length()-2) + " WHERE ";
 		for(int i = 0; i < rownames.length; i++) {
@@ -147,12 +122,9 @@ public class DatabaseAPI {
 		sql = sql.substring(0, sql.length()-5);
 		System.out.println("Update to be prepared: "+sql);
 		PreparedStatement updatestmt = conn.prepareStatement(sql);
-		int columns = updatersmd.getColumnCount();
 		Class<?>[] rowtypes = sddesc.getTypes().toArray(new Class<?>[0]);
-		for(int i = 0, j = columns+1; i < rowtypes.length; i++) {
-			/*if(newvalues[i] == null) {
-				updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
-			}*/
+		for(int i = 0, j = rowtypes.length+1; i < rowtypes.length; i++) {
+			System.out.println("i: "+i+" j: "+j);
 			if(rowtypes[i].equals(Integer.class)) {
 				if(newvalues[i] != null) updatestmt.setInt(i+1, (Integer)newvalues[i]);
 				else updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
@@ -174,71 +146,33 @@ public class DatabaseAPI {
 				if(oldvalues[i] != null) updatestmt.setString(j++, (String)oldvalues[i]);
 			}
 		}
-		/*for(int i = 0, j = 1; i < columns; i++) {
-			for(; j <= columns; j++) {
-				if(rownames[i].equals(updatersmd.getColumnName(j))) {
-					if(newvalues[i] == null) {
-						updatestmt.setNull(i+1, updatersmd.getColumnType(j));
-						break;
-					}
-					switch(updatersmd.getColumnType(j)) {
-					case Types.NUMERIC:
-					case Types.INTEGER:
-						System.out.println("Setting newvalue: " + (String)newvalues[i]);
-						updatestmt.setInt(i+1, Integer.parseInt(((String)newvalues[i])));
-						break;
-					case Types.DATE:
-					case Types.TIMESTAMP:
-					case Types.TIME:
-						System.out.println("Setting newvalue: " + (String)newvalues[i]);
-						updatestmt.setDate(i+1, Date.valueOf((String)newvalues[i]));
-						break;
-					case Types.VARCHAR:
-					case Types.LONGNVARCHAR:
-					case Types.CHAR:
-						System.out.println("Setting newvalue: " + (String)newvalues[i]);
-						updatestmt.setString(i+1, (String)newvalues[i]);
-						break;
-					}
-					break;
-				}
+		updatestmt.execute();
+	}
+	
+	public void delete(SynchedDataDescriptor sddesc, Object[] conds) throws SQLException{
+		String sql = "DELETE FROM " + sddesc.getDataTypeName() + " WHERE ";
+		String[] columnnames = sddesc.getNames().toArray(new String[0]);
+		Class<?>[] rowtypes = sddesc.getTypes().toArray(new Class<?>[0]);
+		for(int i = 0; i < columnnames.length; i++) {
+			if(conds[i] != null) {
+				sql = sql + columnnames[i] + "= ? AND ";
+			}
+			else {
+				sql = sql + columnnames[i] + " IS NULL AND ";
 			}
 		}
-		for(int i = 0, j = 1, conds = 1; i < columns; i++) {
-			for(; j <= columns; j++) {
-				if(rownames[i].equals(updatersmd.getColumnName(j))) {
-					if(conditions[i] == null) {
-						break;
-					}
-					updatestmt.setObject(conds+columns, conditions[i]);
-					switch(updatersmd.getColumnType(j)) {
-					case Types.NUMERIC:
-					case Types.INTEGER:
-						System.out.println("Setting oldvalue: " + (Integer)conditions[i]);
-						updatestmt.setInt(conds+columns, (((Integer)conditions[i])));
-						break;
-					case Types.TIMESTAMP:
-						System.out.println("Setting oldvalue: " + (Timestamp)conditions[i]);
-						updatestmt.setTimestamp(conds+columns, (Timestamp)conditions[i]);
-						break;
-					case Types.TIME:
-					case Types.DATE:
-						System.out.println("Setting oldvalue: " + (String)conditions[i]);
-						updatestmt.setDate(conds+columns, Date.valueOf((String)conditions[i]));
-						break;
-					case Types.VARCHAR:
-					case Types.LONGNVARCHAR:
-					case Types.CHAR:
-						System.out.println("Setting oldvalue: " + (String)conditions[i]);
-						updatestmt.setString(conds+columns, (String)conditions[i]);
-						break;
-					}
-					conds++;
-					break;
-				}
-			}
-		}*/
-		updatestmt.execute();
+		sql = sql.substring(0, sql.length()-5);
+		System.out.println(sql);
+		PreparedStatement deletestmt = conn.prepareStatement(sql);
+		for(int i = 0; i < rowtypes.length; i++) {
+			if(conds[i] == null) continue;
+			else if(rowtypes[i].equals(Integer.class)) deletestmt.setInt(i+1, (Integer)conds[i]);
+			else if(rowtypes[i].equals(java.sql.Date.class)) deletestmt.setDate(i+1, (java.sql.Date)conds[i]);
+			else if(rowtypes[i].equals(Timestamp.class)) deletestmt.setTimestamp(i+1, (Timestamp)conds[i]);
+			else if(rowtypes[i].equals(String.class)) deletestmt.setString(i+1, (String)conds[i]);
+			else throw new SQLException("Bind value none of the types we are ready to handle: "+rowtypes[i].getCanonicalName());
+		}
+		deletestmt.execute();
 	}
 	
 	public ResultSetMetaData getResultSetMetadata() throws SQLException{
