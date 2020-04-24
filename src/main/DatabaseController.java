@@ -75,6 +75,7 @@ public class DatabaseController {
 		String[] tableNames = dbapi.getTableNames();
 		cb.removeAllItems();
 		for(String str : tableNames) cb.addItem(str);
+		this.mainView.dbPanel(true);
 		this.mainView.switchToTableCard();
 	}
 	

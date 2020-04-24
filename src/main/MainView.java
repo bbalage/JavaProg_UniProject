@@ -24,6 +24,7 @@ public class MainView extends JFrame {
 	private JPanel cardPanel;
 	private SynchController synchController;
 	private DatabaseController dbController;
+	private FileController fController;
 	private JTable tableFieldNames;
 	private JTable tableInput;
 	private JTable tableOutput;
@@ -50,7 +51,8 @@ public class MainView extends JFrame {
 	 */
 	public MainView() {
 		this.dbController = new DatabaseController(MainView.this);
-		this.synchController = new SynchController(dbController);
+		this.fController = new FileController(MainView.this);
+		this.synchController = new SynchController(this.dbController, this.fController);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1024, 768);
 		contentPane = new JPanel();
@@ -174,9 +176,22 @@ public class MainView extends JFrame {
 		btnKapcsolatotLezr.setBounds(794, 173, 180, 25);
 		tablePanel.add(btnKapcsolatotLezr);
 		
-		JButton btnSave = new JButton("Mentés fájlba");
-		btnSave.setBounds(794, 676, 203, 25);
+		JButton btnSaveAs = new JButton("Mentés másként");
+		btnSaveAs.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.saveAs();
+			}
+		});
+		btnSaveAs.setBounds(25, 678, 203, 25);
+		tablePanel.add(btnSaveAs);
+		
+		JButton btnSave = new JButton("Mentés");
+		btnSave.setBounds(301, 678, 167, 25);
 		tablePanel.add(btnSave);
+		
+		JButton btnHelp = new JButton("Help");
+		btnHelp.setBounds(891, 678, 117, 25);
+		tablePanel.add(btnHelp);
 	}
 	
 	void switchToTableCard() {

@@ -11,12 +11,14 @@ public class SynchedDataDescriptor {
 	private String dataTypeName;
 	private ArrayList<Class<?>> types;
 	private ArrayList<String> names;
+	private boolean typesSet;
 	//private ArrayList<Integer> preferredWidths;
 	
-	public SynchedDataDescriptor(String dataTypeName, ArrayList<Class<?>> types, ArrayList<String> names) {
+	public SynchedDataDescriptor(String dataTypeName, ArrayList<Class<?>> types, ArrayList<String> names, boolean set) {
 		this.dataTypeName = dataTypeName;
 		this.types = types;
 		this.names = names;
+		this.typesSet = set;
 	}
 	
 	public SynchedDataDescriptor(ResultSetMetaData rsmd, String tablename) throws SQLException{
@@ -46,7 +48,12 @@ public class SynchedDataDescriptor {
 		}
 		if(this.types.size() > 0) this.dataTypeName = tablename;
 		else throw new SQLException("No columns in the given table!");
+		this.typesSet = true;
 		System.out.println(this);
+	}
+
+	public boolean areTypesSet() {
+		return typesSet;
 	}
 
 	public String getDataTypeName() {

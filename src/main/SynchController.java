@@ -20,10 +20,12 @@ public class SynchController {
 	private LoginView lView;
 	private MainView mainView;
 	private DatabaseController dbController;
+	private FileController fController;
 	private SynchedDataDescriptor sddesc;
 	
-	SynchController(DatabaseController dbc){
+	SynchController(DatabaseController dbc, FileController fc){
 		this.dbController = dbc;
+		this.fController = fc;
 	}
 	
 	public void synchWithType(SynchOption sOpt) {
@@ -126,14 +128,12 @@ public class SynchController {
 	private void loadSynchedSession() {
 		this.sPoll.dispose();
 		this.mainView.switchToTableCard();
-		mainView.dbPanel(false);
 		switch(this.sOpt) {
 		case ORACLE:
 		case SQLITE:
 			try {
 				System.out.println("Synch session with oracle/SQLite loading.");
 				dbController.setupDBInterface();
-				mainView.dbPanel(true);
 			}
 			catch(SQLException exc) {
 				this.dbController = null;
@@ -165,13 +165,16 @@ public class SynchController {
 		this.sddesc = sddesc;
 	}
 	
+	public void saveAs() {
+		this.fController.saveAs(this.sddesc);
+	}
+	
 	public static int getSelectedIndeces(JTable jt) throws MyAppException{
 		int[] selected = jt.getSelectedRows();
 		if(selected.length == 0) throw new MyAppException("No rows selected!");
 		if(selected.length > 1) throw new MyAppException("Too many rows selected!");
 		return selected[0];
 	}
-	
 	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
