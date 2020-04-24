@@ -104,8 +104,18 @@ public class DatabaseAPI {
 		for(int i = 0; i < rowtypes.length; i++) {
 			if(values[i] == null) insertstmt.setNull(i+1, insertrsmd.getColumnType(i+1));
 			else if(rowtypes[i].equals(Integer.class)) insertstmt.setInt(i+1, (Integer)values[i]);
-			else if(rowtypes[i].equals(java.sql.Date.class)) insertstmt.setDate(i+1, (java.sql.Date)values[i]);
-			else if(rowtypes[i].equals(Timestamp.class)) insertstmt.setTimestamp(i+1, (Timestamp)values[i]);
+			else if(rowtypes[i].equals(java.sql.Date.class)) {
+				if(mode == 1)insertstmt.setDate(i+1, (java.sql.Date)values[i]);
+				else if(mode == 2) {
+					insertstmt.setString(i+1, ((java.sql.Date)values[i]).toString());
+				}
+			}
+			else if(rowtypes[i].equals(Timestamp.class)) {
+				if(mode == 1) insertstmt.setTimestamp(i+1, (Timestamp)values[i]);
+				else if(mode == 2) {
+					insertstmt.setString(i+1, ((java.sql.Timestamp)values[i]).toString());
+				}
+			}
 			else if(rowtypes[i].equals(String.class)) insertstmt.setString(i+1, (String)values[i]);
 			else throw new SQLException("Bind value none of the types we are ready to handle: "+rowtypes[i].getCanonicalName());
 		}
@@ -150,14 +160,26 @@ public class DatabaseAPI {
 				if(oldvalues[i] != null) updatestmt.setInt(j++, (Integer)oldvalues[i]);
 			}
 			else if(rowtypes[i].equals(java.sql.Date.class)) {
-				if(newvalues[i] != null) updatestmt.setDate(i+1, (Date)newvalues[i]);
+				if(newvalues[i] != null) {
+					if(mode == 1) updatestmt.setDate(i+1, (Date)newvalues[i]);
+					else if(mode == 2) updatestmt.setString(i+1, newvalues[i].toString());
+				}
 				else updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
-				if(oldvalues[i] != null) updatestmt.setDate(j++, (Date)oldvalues[i]);
+				if(oldvalues[i] != null) {
+					if(mode == 1) updatestmt.setDate(j++, (Date)oldvalues[i]);
+					else if(mode == 2) updatestmt.setString(j++, oldvalues[i].toString());
+				}
 			}
 			else if(rowtypes[i].equals(Timestamp.class)) {
-				if(newvalues[i] != null) updatestmt.setTimestamp(i+1, (Timestamp)newvalues[i]);
+				if(newvalues[i] != null) {
+					if(mode == 1) updatestmt.setTimestamp(i+1, (Timestamp)newvalues[i]);
+					else if(mode == 2) updatestmt.setString(i+1, newvalues[i].toString());
+				}
 				else updatestmt.setNull(i+1, insertrsmd.getColumnType(i+1));
-				if(oldvalues[i] != null) updatestmt.setTimestamp(j++, (Timestamp)oldvalues[i]);
+				if(oldvalues[i] != null) {
+					if(mode == 1) updatestmt.setTimestamp(j++, (Timestamp)oldvalues[i]);
+					else if(mode == 2) updatestmt.setString(j++, oldvalues[i].toString());
+				}
 			}
 			else if(rowtypes[i].equals(String.class)) {
 				if(newvalues[i] != null) updatestmt.setString(i+1, (String)newvalues[i]);
@@ -186,8 +208,14 @@ public class DatabaseAPI {
 		for(int i = 0; i < rowtypes.length; i++) {
 			if(conds[i] == null) continue;
 			else if(rowtypes[i].equals(Integer.class)) deletestmt.setInt(i+1, (Integer)conds[i]);
-			else if(rowtypes[i].equals(java.sql.Date.class)) deletestmt.setDate(i+1, (java.sql.Date)conds[i]);
-			else if(rowtypes[i].equals(Timestamp.class)) deletestmt.setTimestamp(i+1, (Timestamp)conds[i]);
+			else if(rowtypes[i].equals(java.sql.Date.class)) {
+				if(mode == 1) deletestmt.setDate(i+1, (java.sql.Date)conds[i]);
+				else if(mode == 2) deletestmt.setString(i+1, conds[i].toString());
+			}
+			else if(rowtypes[i].equals(Timestamp.class)) {
+				if(mode == 1) deletestmt.setTimestamp(i+1, (Timestamp)conds[i]);
+				else if(mode == 2) deletestmt.setString(i+1, conds[i].toString());
+			}
 			else if(rowtypes[i].equals(String.class)) deletestmt.setString(i+1, (String)conds[i]);
 			else throw new SQLException("Bind value none of the types we are ready to handle: "+rowtypes[i].getCanonicalName());
 		}

@@ -205,10 +205,12 @@ public class DatabaseController {
 		if(mode != 0) {
 			try {
 				if(mode == 2) dbapi.doSimpleQuery(this.sddesc.getDataTypeName());
+				Class<?>[] rowtypes = this.sddesc.getTypes().toArray(new Class<?>[0]);
 				while(true) {
 					Object[] rows = dbapi.getResultSetNextRow();
 					if(rows != null) {
-						rows = gc.formatRow(rows, this.sddesc.getTypes().toArray(new Class<?>[0]));
+						System.out.println("Reading from database...");
+						rows = gc.formatRow(rows, rowtypes);
 						dtm.addRow(rows);
 					}
 					else break;

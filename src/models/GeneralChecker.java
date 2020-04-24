@@ -51,6 +51,7 @@ public class GeneralChecker {
 			else if(row[i] instanceof BigDecimal) ret[i] = ((BigDecimal)row[i]).intValue();
 			else if(row[i] instanceof Timestamp && cls[i].equals(java.sql.Date.class)) {ret[i] = new java.sql.Date(((Timestamp)row[i]).getTime()); System.out.println("Timestamp: "+row[i]+"; sqldate: "+ret[i]);}
 			else if(row[i] instanceof Timestamp && cls[i].equals(java.util.Date.class)) {ret[i] = new java.util.Date(((Timestamp)row[i]).getTime()); System.out.println("Timestamp: "+row[i]+"; utildate: "+ret[i]);}
+			//else if(row[i] instanceof Long && cls[i].equals(java.util.Date.class)) {ret[i] = new java.util.Date(((Timestamp)row[i]).getTime());}
 			else if(row[i] instanceof oracle.sql.TIMESTAMP && cls[i].equals(java.sql.Timestamp.class)) {
 				try {
 					ret[i] = new java.sql.Timestamp(((oracle.sql.TIMESTAMP)row[i]).dateValue().getTime());
@@ -58,6 +59,14 @@ public class GeneralChecker {
 				}
 				catch(SQLException exc) {
 					throw new MyAppException("Conversion of Oracle timestamp failed: "+exc.getMessage());
+				}
+			}
+			else if(row[i] instanceof Long && cls[i].equals(Integer.class)) {
+				try {
+					ret[i] = (Integer)row[i];
+				}
+				catch(ClassCastException exc) {
+					throw new MyAppException("Could not cast Long into Integer: "+exc.getMessage());
 				}
 			}
 			else throw new MyAppException("Input type was none of types we are ready to handle: "+row[i].getClass().getCanonicalName() + " at "+ i);

@@ -35,7 +35,7 @@ public class SynchController {
 			synchWithSQLite();
 			break;
 		case NONE:
-			sendMessage("Miscarried functioning! Synchoption was NONE! Revise program!", JOptionPane.ERROR_MESSAGE);
+			sendMessage("Miscarried functioning! Synchoption was NONE! Revise program! syncWithType", JOptionPane.ERROR_MESSAGE);
 			break;
 		}
 		}
@@ -105,11 +105,15 @@ public class SynchController {
 		}
 		switch(this.sOpt) {
 		case ORACLE:
+		case SQLITE:
 			switch(type) {
 			case 0:	this.dbController.insert(); break;
 			case 1:	this.dbController.update(); break;
 			case 2: this.dbController.delete(); break;
 			}
+			break;
+		case NONE:
+			sendMessage("Synch option was null, where it should have had an option! Revise program! dataModifyingAction", JOptionPane.ERROR_MESSAGE);
 			break;
 		}
 	}
