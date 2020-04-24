@@ -68,6 +68,7 @@ public class SynchController {
 			sendMessage("Sikeres kapcsolódás az SQLite adatbázissal.", JOptionPane.INFORMATION_MESSAGE);
 			this.sOpt = SynchOption.SQLITE;
 			this.sPoll.dispose();
+			loadSynchedSession();
 		}
 	}
 	
@@ -117,15 +118,16 @@ public class SynchController {
 		this.sddesc = dbController.loadTable();
 	}
 	
+	//sPoll is disposed of here.
 	private void loadSynchedSession() {
 		this.sPoll.dispose();
 		this.mainView.switchToTableCard();
 		mainView.dbPanel(false);
 		switch(this.sOpt) {
 		case ORACLE:
-		//case SQLITE:
+		case SQLITE:
 			try {
-				System.out.println("Synch session with oracle loading.");
+				System.out.println("Synch session with oracle/SQLite loading.");
 				dbController.setupDBInterface();
 				mainView.dbPanel(true);
 			}
@@ -135,14 +137,20 @@ public class SynchController {
 				this.mainView.switchToHomeCard();
 			}
 			break;
+		case NONE:
+			sendMessage("No option was present for loading synched session.", JOptionPane.INFORMATION_MESSAGE);
+			break;
 		}
 	}
 	
 	public void closeSynchSession() {
 		switch(this.sOpt) {
 		case ORACLE:
-		//case SQLITE:
+		case SQLITE:
 			this.dbController.endDBSession();
+			break;
+		case NONE:
+			sendMessage("No synch was active.", JOptionPane.INFORMATION_MESSAGE);
 			break;
 		}
 		this.sOpt = SynchOption.NONE;

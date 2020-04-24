@@ -23,6 +23,7 @@ public class DatabaseAPI {
 	private Statement simpleQuery;
 	private PreparedStatement insertstmt;
 	private ResultSetMetaData insertrsmd;
+	private int mode; //0 for none, 1 for oracle, 2 for SQLite
 	/*
 		insertrsmd is problem source: desynchronization between resultset and synched data descriptor might cause crash (bad network connection).
 		Checking synchronization or using only one should be implemented in further versions.
@@ -32,7 +33,8 @@ public class DatabaseAPI {
 		Class.forName("org.sqlite.JDBC");
 		conn = DriverManager.getConnection(URL);
 		this.userSpace = null;
-		simpleQuery = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		simpleQuery = conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+		this.mode = 2;
 	}
 	
 	public void connectToOracle(String username, String password, String workspace) throws SQLException, ClassNotFoundException{
@@ -44,6 +46,7 @@ public class DatabaseAPI {
 		conn = DriverManager.getConnection("jdbc:oracle:thin:@"+URL,username,password);
 		this.userSpace = workspace;
 		simpleQuery = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+		this.mode = 1;
 	}
 	
 	public void closeConnection() throws SQLException{
@@ -53,6 +56,7 @@ public class DatabaseAPI {
 			this.insertstmt = null;
 			this.mrs = null;
 			this.simpleQuery = null;
+			this.mode = 0;
 		}
 	}
 	
@@ -79,12 +83,9 @@ public class DatabaseAPI {
 		return tableNameList.toArray(new String[0]);
 	}
 	
-	public boolean doSimpleQuery(String tablename) throws SQLException {
+	public void doSimpleQuery(String tablename) throws SQLException {
 		String sql = "SELECT * FROM "+tablename;
 		this.mrs = simpleQuery.executeQuery(sql);
-		boolean notEmpty = this.mrs.next();
-		if(notEmpty) this.mrs.beforeFirst();
-		return notEmpty;
 	}
 	
 	public Object[] getResultSetNextRow() throws SQLException{
