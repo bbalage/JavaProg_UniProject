@@ -27,6 +27,9 @@ public class DatabaseAPI {
 	/*
 		insertrsmd is problem source: desynchronization between resultset and synched data descriptor might cause crash (bad network connection).
 		Checking synchronization or using only one should be implemented in further versions.
+		
+		Timestamp values in SQLite are named Timestamp but treated like strings.
+		This can cause crashes.
 	*/
 	public void connectToSQLite(File db) throws ClassNotFoundException, SQLException{
 		String URL = "jdbc:sqlite:"+db.getAbsolutePath();
@@ -73,6 +76,8 @@ public class DatabaseAPI {
 		return columns.toArray(new String[0]);
 	}
 	
+	
+
 	public String[] getTableNames() throws SQLException{
 		DatabaseMetaData dbmd = conn.getMetaData();
 		ResultSet rs = dbmd.getTables(null, this.userSpace, "%", null);
@@ -220,6 +225,11 @@ public class DatabaseAPI {
 			else throw new SQLException("Bind value none of the types we are ready to handle: "+rowtypes[i].getCanonicalName());
 		}
 		deletestmt.execute();
+	}
+	
+	
+	public int getMode() {
+		return mode;
 	}
 	
 	public ResultSetMetaData getResultSetMetadata() throws SQLException{

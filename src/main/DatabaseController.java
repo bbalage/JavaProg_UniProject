@@ -101,6 +101,14 @@ public class DatabaseController {
 		try {
 			String[] fieldNames = dbapi.getColumnNamesOrType((String)this.mainView.getComboBoxTableNames().getSelectedItem(), 0);
 			String[] fieldTypes = dbapi.getColumnNamesOrType((String)this.mainView.getComboBoxTableNames().getSelectedItem(), 1);
+			for(String ft : fieldTypes) {
+				if(dbapi.getMode() != 2) break;
+				if(ft.equalsIgnoreCase("TIMESTAMP")) {
+					sendMessage("SQLite adatbáziskezelésnél a TIMESTAMP típus használta nem javasolt!\n"
+							+ "Az adatbázis nem következetes a metaadatok visszaadásánál, ezért hibát fog eredményezni a használata.\n"
+							+ "Ne kezelje ezt a táblát, vagy tárolja másképp az adatbázisban!", JOptionPane.ERROR_MESSAGE);
+				}
+			}
 			for(int i = 0; i < fieldNames.length; i++) {
 				ntm.addRow(new Object[] {fieldNames[i], fieldTypes[i]});
 			}
