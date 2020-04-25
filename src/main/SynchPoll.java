@@ -29,16 +29,21 @@ public class SynchPoll extends JDialog {
 		contentPanel.setLayout(null);
 		
 		JRadioButton rdbtnOracle = new JRadioButton("Oracle adatbázis");
-		rdbtnOracle.setBounds(18, 18, 162, 23);
+		rdbtnOracle.setBounds(20, 20, 162, 23);
 		contentPanel.add(rdbtnOracle);
 		
 		JRadioButton rdbtnSQLite = new JRadioButton("SQLite adatbázis");
-		rdbtnSQLite.setBounds(18, 49, 162, 23);
+		rdbtnSQLite.setBounds(20, 50, 162, 23);
 		contentPanel.add(rdbtnSQLite);
+		
+		JRadioButton rdbtnXml = new JRadioButton("Lokális xml fájl");
+		rdbtnXml.setBounds(20, 80, 149, 23);
+		contentPanel.add(rdbtnXml);
 		
 		ButtonGroup rdbtnGroup = new ButtonGroup();
 		rdbtnGroup.add(rdbtnOracle);
 		rdbtnGroup.add(rdbtnSQLite);
+		rdbtnGroup.add(rdbtnXml);
 		rdbtnOracle.setSelected(true);
 		{
 			JPanel buttonPane = new JPanel();
@@ -50,7 +55,7 @@ public class SynchPoll extends JDialog {
 					public void actionPerformed(ActionEvent e) {
 						if(rdbtnOracle.isSelected()) synchController.synchWithType(SynchOption.ORACLE);
 						else if (rdbtnSQLite.isSelected()) synchController.synchWithType(SynchOption.SQLITE);
-						
+						else if (rdbtnXml.isSelected()) synchController.synchWithType(SynchOption.XML);
 					}
 				});
 				okButton.setActionCommand("OK");

@@ -29,6 +29,29 @@ public class FileController {
 		this.mainView = mainView;
 	}
 	
+	/*public SynchedDataDescriptor loadFile(int opt) {
+		try {
+			JFileChooser jfc = new JFileChooser();
+			int ret = jfc.showSaveDialog(this.mainView);
+			File source;
+			if(ret == JFileChooser.APPROVE_OPTION) {
+				source = new File(jfc.getSelectedFile().getAbsolutePath());
+			}
+			else return null;
+			flm.startReadSession(source, opt);
+			
+		}
+		catch(MyAppException exc) {
+			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+		catch(IOException exc) {
+			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
+		return null;
+	}*/
+	
 	public void saveAs(SynchedDataDescriptor sddesc) {
 		this.sddesc = sddesc;
 		this.sp = new SavePoll(this.mainView, FileController.this);
@@ -40,16 +63,16 @@ public class FileController {
 			sendMessage("Nem volt megadva filenév a mentésre!", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		JFileChooser jfc = new JFileChooser();
-		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-		int ret = jfc.showSaveDialog(this.mainView);
-		File targetDir;
-		if(ret == JFileChooser.APPROVE_OPTION) {
-			targetDir = new File(jfc.getSelectedFile().getAbsolutePath());
-		}
-		else return;
 		boolean ok = true;
 		try {
+			JFileChooser jfc = new JFileChooser();
+			jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+			int ret = jfc.showSaveDialog(this.mainView);
+			File targetDir;
+			if(ret == JFileChooser.APPROVE_OPTION) {
+				targetDir = new File(jfc.getSelectedFile().getAbsolutePath());
+			}
+			else return;
 			flm.startSaveSession(this.sddesc, targetDir, targetFileName, opt, false);
 			boolean dataInMemory = this.sddesc.getData() != null;
 			if(dataInMemory) {

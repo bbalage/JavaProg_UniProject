@@ -12,6 +12,7 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 
 import models.*;
+import oracle.net.aso.f;
 import utilities.*;
 
 public class SynchController {
@@ -37,6 +38,9 @@ public class SynchController {
 		case SQLITE:
 			synchWithSQLite();
 			break;
+		case XML:
+			synchWithXml();
+			break;
 		case NONE:
 			sendMessage("Miscarried functioning! Synchoption was NONE! Revise program! syncWithType", JOptionPane.ERROR_MESSAGE);
 			break;
@@ -56,6 +60,22 @@ public class SynchController {
 	
 	public void cancelSynchWithOracle() {
 		this.lView.dispose();
+	}
+	
+	private void synchWithXml() {
+		JFileChooser jfc = new JFileChooser();
+		jfc.setDialogTitle("Válassza ki az xml fájlt, amivel szinkronizálni szeretne!");
+		int ret = jfc.showOpenDialog(this.sPoll);
+		if(ret == JFileChooser.APPROVE_OPTION) {
+			File xmlFile = jfc.getSelectedFile();
+			//this.sddesc = this.fController.loadXmlFile();
+		}
+		if(this.sddesc != null) {
+			sendMessage("Sikeres kapcsolódás az xml fájllal.", JOptionPane.INFORMATION_MESSAGE);
+			this.sOpt = SynchOption.XML;
+			this.sPoll.dispose();
+			loadSynchedSession();
+		}
 	}
 	
 	private void synchWithSQLite() {
