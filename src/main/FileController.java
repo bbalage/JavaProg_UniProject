@@ -1,6 +1,7 @@
 package main;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
@@ -9,6 +10,7 @@ import javax.swing.JTable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.*;
 
@@ -46,12 +48,13 @@ public class FileController {
 			targetDir = new File(jfc.getSelectedFile().getAbsolutePath());
 		}
 		else return;
+		boolean ok = true;
 		try {
 			flm.startSaveSession(this.sddesc, targetDir, targetFileName, opt);
 			boolean dataInMemory = this.sddesc.getData() != null;
 			if(dataInMemory) {
 				System.out.println("Data was in memory.");
-				flm.abortSaveSession();
+				flm.clearSaveSession();
 			}
 			else {
 				JTable jt = this.mainView.getTableOutput();
@@ -59,20 +62,35 @@ public class FileController {
 				for(int i = 0; i < trows; i++) {
 					flm.appendRow(SynchController.getRow(jt, i));
 				}
-				
+				flm.finishSaveAsXml();
 			}
 		}
 		catch(MyAppException exc) {
 			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			ok = false;
 		}
 		catch(ParserConfigurationException exc) {
 			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			ok = false;
+		}
+		catch(IOException exc) {
+			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			ok = false;
+		}
+		catch(TransformerException exc) {
+			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			ok = false;
+		}
+		if(!ok) {
+			flm.clearSaveSession();
+		}
+		else {
+			this.sp.dispose();
 		}
 	}
 	
 	public void cancelSaveAs() {
 		this.sp.dispose();
-		this.sp = null;
 	}
 	
 	

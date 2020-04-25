@@ -1,9 +1,14 @@
 package models;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.*;
+import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
 
@@ -19,6 +24,7 @@ public class FilePolicyModel {
 	private Element rootE;
 	private String instancename;
 	private String[] classnames;
+	private String[] columnnames;
 	
 	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt) throws MyAppException, ParserConfigurationException{
 		String path = targetDir.getAbsolutePath()+separator+targetName;
@@ -64,14 +70,36 @@ public class FilePolicyModel {
 			for(int i = 0; i < cls.length; i++) {
 				this.classnames[i] = cls[i].getCanonicalName();
 			}
+			this.columnnames = sddesc.getNames().toArray(new String[0]);
 		}
 	}
 	
 	public void appendRow(Object[] row) {
-		
+		Element rowE = dom.createElement(this.instancename);
+		for(int i = 0; i < row.length; i++) {
+			Element fieldE = dom.createElement(this.columnnames[i]);
+			if(this.areTypesSet) {
+				fieldE.setAttribute("type", this.classnames[i]);
+			}
+			if(row[i] != null) {
+				fieldE.appendChild(dom.createTextNode(row[i].toString()));
+			}
+			rowE.appendChild(fieldE);
+		}
+		this.rootE.appendChild(rowE);
 	}
 	
-	public void abortSaveSession() {
+	public void finishSaveAsXml() throws ParserConfigurationException, IOException, TransformerException{
+		dom.appendChild(this.rootE);
+		Transformer tr = TransformerFactory.newInstance().newTransformer();
+		tr.setOutputProperty(OutputKeys.INDENT, "yes");
+		tr.setOutputProperty(OutputKeys.METHOD, "xml");
+		tr.setOutputProperty(OutputKeys.ENCODING, "ISO-8859-2");
+		tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+		tr.transform(new DOMSource(this.dom), new StreamResult(new FileOutputStream(this.targetFile.getAbsolutePath())));
+	}
+	
+	public void clearSaveSession() {
 		this.dom = null;
 		this.mode = -1;
 		this.rootE = null;
