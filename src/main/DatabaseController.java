@@ -125,7 +125,7 @@ public class DatabaseController {
 			this.sddesc = new SynchedDataDescriptor(dbapi.getResultSetMetadata(),(String)this.mainView.getComboBoxTableNames().getSelectedItem());
 			buildTableFromResultSet(0);
 			buildTableFromResultSet(1);
-			dbapi.prepareInsert(this.sddesc.getDataTypeName(), this.sddesc.getNames().toArray(new String[0]));
+			dbapi.prepareInsert(this.sddesc.getDataTypeName(), this.sddesc.getNames());
 		}
 		catch(SQLException exc) {
 			sendMessage("Querying from database failed. - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
@@ -138,8 +138,8 @@ public class DatabaseController {
 	public void insert() {
 		try {
 			Object[] values = SynchController.getRow(this.mainView.getTableInput(), 0);
-			values = gc.formatRow(values, this.sddesc.getTypes().toArray(new Class<?>[0]));
-			dbapi.baseInsert(this.sddesc.getTypes().toArray(new Class<?>[0]), values);
+			values = gc.formatRow(values, this.sddesc.getTypes());
+			dbapi.baseInsert(this.sddesc.getTypes(), values);
 			buildTableFromResultSet(2);
 			sendMessage("Insertion successful.", JOptionPane.INFORMATION_MESSAGE);
 		}
@@ -156,8 +156,8 @@ public class DatabaseController {
 			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
 			Object[] inputValues = SynchController.getRow(this.mainView.getTableInput(), 0);
 			Object[] oldValues = SynchController.getRow(this.mainView.getTableOutput(), sel);
-			inputValues = gc.formatRow(inputValues, sddesc.getTypes().toArray(new Class<?>[0]));
-			oldValues = gc.formatRow(oldValues, sddesc.getTypes().toArray(new Class<?>[0]));
+			inputValues = gc.formatRow(inputValues, sddesc.getTypes());
+			oldValues = gc.formatRow(oldValues, sddesc.getTypes());
 			dbapi.update(this.sddesc, inputValues, oldValues);
 			buildTableFromResultSet(2);
 		}
@@ -173,7 +173,7 @@ public class DatabaseController {
 		try {
 			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
 			Object [] conds = SynchController.getRow(this.mainView.getTableOutput(), sel);
-			conds = gc.formatRow(conds, sddesc.getTypes().toArray(new Class<?>[0]));
+			conds = gc.formatRow(conds, sddesc.getTypes());
 			dbapi.delete(this.sddesc, conds);
 			buildTableFromResultSet(2);
 		}
@@ -190,7 +190,7 @@ public class DatabaseController {
 	//Mode is 1: Sets up output table from the current result set.
 	//Mode is 2: Sets up output table after a query on the current data type name.
 	private void buildTableFromResultSet(int mode) {
-		Object[] names = this.sddesc.getNames().toArray(new Object[0]);
+		Object[] names = this.sddesc.getNames();
 		DefaultTableModel dtm;
 		JTable jt;
 		if(mode == 0) {
@@ -203,23 +203,28 @@ public class DatabaseController {
 			jt = this.mainView.getTableOutput();
 			jt.setModel(dtm);
 		}
-		Class<?>[] cls = this.sddesc.getTypes().toArray(new Class<?>[0]);
-		for(int i = 0; i < cls.length; i++) {
+		String[] types = this.sddesc.getTypes();
+		for(int i = 0; i < types.length; i++) {
 			//System.out.println(i + ": class - " + cls[i].toString());
-			if(cls[i].equals(Integer.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(120);
-			else if(cls[i].equals(java.util.Date.class) || cls[i].equals(Timestamp.class) || cls[i].equals(java.sql.Date.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(200);
-			else if(cls[i].equals(String.class)) jt.getColumnModel().getColumn(i).setPreferredWidth(300);
+			if(types[i].equals(Integer.class.getCanonicalName())) {
+				jt.getColumnModel().getColumn(i).setPreferredWidth(120);
+			}
+			else if(types[i].equals(java.util.Date.class.getCanonicalName()) || types[i].equals(Timestamp.class.getCanonicalName()) || types[i].equals(java.sql.Date.class.getCanonicalName())) {
+				jt.getColumnModel().getColumn(i).setPreferredWidth(200);
+			}
+			else if(types[i].equals(String.class.getCanonicalName())) {
+				jt.getColumnModel().getColumn(i).setPreferredWidth(300);
+			}
 			else jt.getColumnModel().getColumn(i).setPreferredWidth(50);
 		}
 		if(mode != 0) {
 			try {
 				if(mode == 2) dbapi.doSimpleQuery(this.sddesc.getDataTypeName());
-				Class<?>[] rowtypes = this.sddesc.getTypes().toArray(new Class<?>[0]);
 				while(true) {
 					Object[] rows = dbapi.getResultSetNextRow();
 					if(rows != null) {
 						System.out.println("Reading from database...");
-						rows = gc.formatRow(rows, rowtypes);
+						rows = gc.formatRow(rows, types);
 						dtm.addRow(rows);
 					}
 					else break;

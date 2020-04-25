@@ -9,12 +9,12 @@ import java.util.ArrayList;
 public class SynchedDataDescriptor {
 	
 	private String dataTypeName;
-	private ArrayList<Class<?>> types;
-	private ArrayList<String> names;
+	private String[] types;
+	private String[] names;
 	private boolean typesSet;
 	private ArrayList<Object[]> data = null;
 	
-	public SynchedDataDescriptor(String dataTypeName, ArrayList<Class<?>> types, ArrayList<String> names, boolean set, ArrayList<Object[]> data) {
+	public SynchedDataDescriptor(String dataTypeName, String[] types, String[] names, boolean set, ArrayList<Object[]> data) {
 		this.dataTypeName = dataTypeName;
 		this.types = types;
 		this.names = names;
@@ -23,34 +23,36 @@ public class SynchedDataDescriptor {
 	}
 	
 	public SynchedDataDescriptor(ResultSetMetaData rsmd, String tablename) throws SQLException{
-		this.types = new ArrayList<Class<?>>();
-		this.names = new ArrayList<String>();
+		ArrayList<String> types = new ArrayList<String>();
+		ArrayList<String> names = new ArrayList<String>();
 		for(int i = 1; i <= rsmd.getColumnCount(); i++) {
 			switch(rsmd.getColumnType(i)) {
 			case Types.NUMERIC:
 			case Types.INTEGER:
-				types.add(Integer.class);
+				types.add(Integer.class.getCanonicalName());
 				break;
 			case Types.DATE:
-				types.add(java.sql.Date.class);
+				types.add(java.sql.Date.class.getCanonicalName());
 				break;
 			case Types.TIMESTAMP:
 			case Types.TIME:
-				if(rsmd.getColumnTypeName(i).equals("DATE")) types.add(java.sql.Date.class);
-				else types.add(Timestamp.class);
+				if(rsmd.getColumnTypeName(i).equals("DATE")) types.add(java.sql.Date.class.getCanonicalName());
+				else types.add(Timestamp.class.getCanonicalName());
 				break;
 			case Types.VARCHAR:
 			case Types.LONGNVARCHAR:
 			case Types.CHAR:
-				types.add(String.class);
+				types.add(String.class.getCanonicalName());
 				break;
 			}
-			this.names.add(rsmd.getColumnName(i));
+			names.add(rsmd.getColumnName(i));
 		}
-		if(this.types.size() > 0) this.dataTypeName = tablename;
+		if(types.size() > 0) this.dataTypeName = tablename;
 		else throw new SQLException("No columns in the given table!");
 		this.typesSet = true;
 		this.data = null;
+		this.names = names.toArray(new String[0]);
+		this.types = types.toArray(new String[0]);
 		System.out.println(this);
 	}
 
@@ -66,19 +68,19 @@ public class SynchedDataDescriptor {
 		return dataTypeName;
 	}
 
-	public ArrayList<String> getNames() {
+	public String[] getNames() {
 		return names;
 	}
 
-	public ArrayList<Class<?>> getTypes() {
+	public String[] getTypes() {
 		return types;
 	}
 
 	@Override
 	public String toString() {
 		String ret = "SynchedDataDescriptor dataTypeName= "+this.dataTypeName + "datatypes: ";
-		for(Class<?> cls : this.types)
-			ret = ret + cls.getSimpleName() + ", ";
+		for(String s : this.types)
+			ret = ret + s + ", ";
 		return ret.substring(0, ret.length()-2);
 	}
 	

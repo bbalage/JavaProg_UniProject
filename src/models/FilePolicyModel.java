@@ -68,12 +68,8 @@ public class FilePolicyModel {
 		this.instancename = dataName+"instance";
 		this.areTypesSet = sddesc.areTypesSet();
 		if(this.areTypesSet) {
-			Class<?>[] cls = sddesc.getTypes().toArray(new Class<?>[0]);
-			this.classnames = new String[cls.length];
-			for(int i = 0; i < cls.length; i++) {
-				this.classnames[i] = cls[i].getCanonicalName();
-			}
-			this.columnnames = sddesc.getNames().toArray(new String[0]);
+			this.classnames = sddesc.getTypes(); 
+			this.columnnames = sddesc.getNames();
 		}
 	}
 	
