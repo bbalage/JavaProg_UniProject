@@ -2,6 +2,7 @@ package main;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 
 import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
@@ -167,6 +168,16 @@ public class SynchController {
 	
 	public void saveAs() {
 		this.fController.saveAs(this.sddesc);
+	}
+	
+	public static Object[] getRow(JTable jt, int row) {
+		ArrayList<Object> oblist = new ArrayList<Object>();
+		for(int i = 0; i < jt.getColumnCount(); i++) {
+			Object obj = jt.getValueAt(row, i);
+			if(obj != null) obj = obj.toString();
+			oblist.add(obj);
+		}
+		return oblist.toArray();
 	}
 	
 	public static int getSelectedIndeces(JTable jt) throws MyAppException{

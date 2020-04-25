@@ -137,7 +137,7 @@ public class DatabaseController {
 	
 	public void insert() {
 		try {
-			Object[] values = getRow(this.mainView.getTableInput(), 0);
+			Object[] values = SynchController.getRow(this.mainView.getTableInput(), 0);
 			values = gc.formatRow(values, this.sddesc.getTypes().toArray(new Class<?>[0]));
 			dbapi.baseInsert(this.sddesc.getTypes().toArray(new Class<?>[0]), values);
 			buildTableFromResultSet(2);
@@ -154,8 +154,8 @@ public class DatabaseController {
 	public void update() {
 		try {
 			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
-			Object[] inputValues = getRow(this.mainView.getTableInput(), 0);
-			Object[] oldValues = getRow(this.mainView.getTableOutput(), sel);
+			Object[] inputValues = SynchController.getRow(this.mainView.getTableInput(), 0);
+			Object[] oldValues = SynchController.getRow(this.mainView.getTableOutput(), sel);
 			inputValues = gc.formatRow(inputValues, sddesc.getTypes().toArray(new Class<?>[0]));
 			oldValues = gc.formatRow(oldValues, sddesc.getTypes().toArray(new Class<?>[0]));
 			dbapi.update(this.sddesc, inputValues, oldValues);
@@ -172,7 +172,7 @@ public class DatabaseController {
 	public void delete() {
 		try {
 			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
-			Object [] conds = getRow(this.mainView.getTableOutput(), sel);
+			Object [] conds = SynchController.getRow(this.mainView.getTableOutput(), sel);
 			conds = gc.formatRow(conds, sddesc.getTypes().toArray(new Class<?>[0]));
 			dbapi.delete(this.sddesc, conds);
 			buildTableFromResultSet(2);
@@ -234,15 +234,7 @@ public class DatabaseController {
 		}
 	}
 	
-	public Object[] getRow(JTable jt, int row) {
-		ArrayList<Object> oblist = new ArrayList<Object>();
-		for(int i = 0; i < jt.getColumnCount(); i++) {
-			Object obj = jt.getValueAt(row, i);
-			if(obj != null) obj = obj.toString();
-			oblist.add(obj);
-		}
-		return oblist.toArray();
-	}
+	
 	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Adatbázis kontroll üzenet.", opt);

@@ -1,9 +1,11 @@
 package main;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -11,13 +13,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.*;
 
 import models.*;
+import utilities.*;
 
 public class FileController {
 
 	private MainView mainView;
 	private SavePoll sp;
 	private SynchedDataDescriptor sddesc;
-	private String separator = System.getProperty("file.separator");
+	private FilePolicyModel flm = new FilePolicyModel();
 	
 	public FileController(MainView mainView) {
 		super();
@@ -38,34 +41,33 @@ public class FileController {
 		JFileChooser jfc = new JFileChooser();
 		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int ret = jfc.showSaveDialog(this.mainView);
-		String path = "";
+		File targetDir;
 		if(ret == JFileChooser.APPROVE_OPTION) {
-			File target = new File(jfc.getSelectedFile()+separator+targetFileName);
-			path = target.getAbsolutePath();
+			targetDir = new File(jfc.getSelectedFile().getAbsolutePath());
 		}
 		else return;
-		String appendix;
-		switch(opt) {
-		case 0: appendix = ".csv"; break;
-		case 1: appendix = ".xml"; break;
-		default:
-			sendMessage("Nem támogatott fájl mentési opció a mentés másként funkcióban.", JOptionPane.ERROR_MESSAGE);
-			return;
+		try {
+			flm.startSaveSession(this.sddesc, targetDir, targetFileName, opt);
+			boolean dataInMemory = this.sddesc.getData() != null;
+			if(dataInMemory) {
+				System.out.println("Data was in memory.");
+				flm.abortSaveSession();
+			}
+			else {
+				JTable jt = this.mainView.getTableOutput();
+				int trows = jt.getRowCount();
+				for(int i = 0; i < trows; i++) {
+					flm.appendRow(SynchController.getRow(jt, i));
+				}
+				
+			}
 		}
-		if(path.length() >= appendix.length()+1) {
-			if(!path.substring(path.length()-appendix.length()-1, path.length()-1).equals(appendix)) path+=appendix;
+		catch(MyAppException exc) {
+			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
-		sendMessage("Filenév: "+path, JOptionPane.INFORMATION_MESSAGE);
-		
-		/*switch(opt) {
-		case 0:
-			
-			break;
-		case 1:
-			
-			break;
-		
-		}*/
+		catch(ParserConfigurationException exc) {
+			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
 	public void cancelSaveAs() {
@@ -73,30 +75,6 @@ public class FileController {
 		this.sp = null;
 	}
 	
-	public void saveAsCsv() {
-		
-	}
-	
-	/*public void saveAsXml(String targetFilename) {
-		
-		try {
-			Document dom;
-			DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-			dom = db.newDocument();
-			String dataName = this.sddesc.getDataTypeName();
-			dataName = dataName != null ? dataName : "Untitled";
-			Element rootE = dom.createElement(dataName);
-			boolean areTypesSet = sddesc.areTypesSet();
-			
-		}
-		catch(ParserConfigurationException exc) {
-			sendMessage("Nem sikerült az XML mentése: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
-		}
-	}*/
-	
-	public void saveXML(String path) {
-		
-	}
 	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Fájl kontroll üzenet.", opt);
