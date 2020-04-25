@@ -167,6 +167,10 @@ public class SynchController {
 	}
 	
 	public void saveAs() {
+		if(this.mainView.getTableOutput().getColumnCount() <= 0 || this.mainView.getTableInput().getColumnCount() <= 0) {
+			sendMessage("No data structure present to execute the action on.", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 		this.fController.saveAs(this.sddesc);
 	}
 	

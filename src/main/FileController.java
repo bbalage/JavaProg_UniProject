@@ -50,7 +50,7 @@ public class FileController {
 		else return;
 		boolean ok = true;
 		try {
-			flm.startSaveSession(this.sddesc, targetDir, targetFileName, opt);
+			flm.startSaveSession(this.sddesc, targetDir, targetFileName, opt, false);
 			boolean dataInMemory = this.sddesc.getData() != null;
 			if(dataInMemory) {
 				System.out.println("Data was in memory.");
@@ -85,6 +85,7 @@ public class FileController {
 			flm.clearSaveSession();
 		}
 		else {
+			sendMessage("Sikeres mentés!", JOptionPane.INFORMATION_MESSAGE);
 			this.sp.dispose();
 		}
 	}

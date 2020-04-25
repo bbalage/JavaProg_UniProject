@@ -26,7 +26,7 @@ public class FilePolicyModel {
 	private String[] classnames;
 	private String[] columnnames;
 	
-	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt) throws MyAppException, ParserConfigurationException{
+	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt, boolean overWrite) throws MyAppException, ParserConfigurationException{
 		String path = targetDir.getAbsolutePath()+separator+targetName;
 		String appendix;
 		switch(opt) {
@@ -36,9 +36,10 @@ public class FilePolicyModel {
 			throw new MyAppException("Nem támogatott fájl mentési opció a mentés másként funkcióban.");
 		}
 		if(path.length() >= appendix.length()+1) {
-			if(!path.substring(path.length()-appendix.length()-1, path.length()-1).equals(appendix)) path+=appendix;
+			if(!path.substring(path.length()-appendix.length(), path.length()).equals(appendix)) path+=appendix;
 		}
 		this.targetFile = new File(path);
+		if(!overWrite && this.targetFile.exists()) throw new MyAppException("Ez a fájl már létezik! A felülírás nem engedélyezett a mentés másként funkcióban.");
 		this.mode = opt;
 		switch(opt) {
 		case 0:
