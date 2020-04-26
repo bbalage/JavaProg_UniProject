@@ -76,6 +76,7 @@ public class DatabaseController {
 		cb.removeAllItems();
 		for(String str : tableNames) cb.addItem(str);
 		this.mainView.dbPanel(true);
+		this.mainView.getBtnSave().setVisible(false);
 		this.mainView.switchToTableCard();
 	}
 	
@@ -204,19 +205,7 @@ public class DatabaseController {
 			jt.setModel(dtm);
 		}
 		String[] types = this.sddesc.getTypes();
-		for(int i = 0; i < types.length; i++) {
-			//System.out.println(i + ": class - " + cls[i].toString());
-			if(types[i].equals(Integer.class.getCanonicalName())) {
-				jt.getColumnModel().getColumn(i).setPreferredWidth(120);
-			}
-			else if(types[i].equals(java.util.Date.class.getCanonicalName()) || types[i].equals(Timestamp.class.getCanonicalName()) || types[i].equals(java.sql.Date.class.getCanonicalName())) {
-				jt.getColumnModel().getColumn(i).setPreferredWidth(200);
-			}
-			else if(types[i].equals(String.class.getCanonicalName())) {
-				jt.getColumnModel().getColumn(i).setPreferredWidth(300);
-			}
-			else jt.getColumnModel().getColumn(i).setPreferredWidth(50);
-		}
+		GeneralController.setTablePreferredWidths(jt, types);
 		if(mode != 0) {
 			try {
 				if(mode == 2) dbapi.doSimpleQuery(this.sddesc.getDataTypeName());

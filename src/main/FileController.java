@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
+import javax.swing.table.DefaultTableModel;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -50,7 +51,22 @@ public class FileController {
 			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
+		this.sddesc = sddesc;
 		return sddesc;
+	}
+	
+	public void setupFileInterface() {
+		this.mainView.dbPanel(false);
+		this.mainView.getBtnSave().setVisible(true);
+		buildTablesFromSDDesc();
+	}
+	
+	public void endFileSession(){
+		this.flm.clearSaveSession(); //Some more specific cleaning code might be necessary.
+		this.mainView.getTableFieldNames().setModel(new NameTableModel());
+		this.mainView.getTableInput().setModel(new DefaultTableModel());
+		this.mainView.getTableOutput().setModel(new OutputTableModel());
+		this.mainView.switchToHomeCard();
 	}
 	
 	public void saveAs(SynchedDataDescriptor sddesc) {
@@ -112,6 +128,22 @@ public class FileController {
 			sendMessage("Sikeres mentés!", JOptionPane.INFORMATION_MESSAGE);
 			this.sp.dispose();
 		}
+	}
+	
+	public void buildTablesFromSDDesc() {
+		//ArrayList<Object> objs = new ArrayList<Object>();
+		Object[] names = this.sddesc.getNames();
+		String[] types = this.sddesc.getTypes();
+		JTable it = this.mainView.getTableInput();
+		it.setModel(new InputTableModel(names));
+		OutputTableModel otm = new OutputTableModel(names);
+		JTable ot = this.mainView.getTableOutput();
+		ot.setModel(otm);
+		for(Object[] values : this.sddesc.getData()) {
+			otm.addRow(values);
+		}
+		GeneralController.setTablePreferredWidths(ot, types);
+		GeneralController.setTablePreferredWidths(it, types);
 	}
 	
 	public void cancelSaveAs() {

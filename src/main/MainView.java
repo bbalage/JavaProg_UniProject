@@ -30,6 +30,9 @@ public class MainView extends JFrame {
 	private JTable tableOutput;
 	private JComboBox<String> comboBoxTableNames;
 	private JPanel databasePanel;
+	private JButton btnSave;
+	
+
 	/**
 	 * Launch the application.
 	 */
@@ -185,7 +188,7 @@ public class MainView extends JFrame {
 		btnSaveAs.setBounds(25, 678, 203, 25);
 		tablePanel.add(btnSaveAs);
 		
-		JButton btnSave = new JButton("Mentés");
+		btnSave = new JButton("Mentés");
 		btnSave.setBounds(301, 678, 167, 25);
 		tablePanel.add(btnSave);
 		
@@ -222,5 +225,9 @@ public class MainView extends JFrame {
 
 	JTable getTableOutput() {
 		return tableOutput;
+	}
+	
+	public JButton getBtnSave() {
+		return btnSave;
 	}
 }

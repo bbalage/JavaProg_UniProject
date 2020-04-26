@@ -157,10 +157,12 @@ public class SynchController {
 				dbController.setupDBInterface();
 			}
 			catch(SQLException exc) {
-				this.dbController = null;
 				this.sOpt = SynchOption.NONE;
 				this.mainView.switchToHomeCard();
 			}
+			break;
+		case XML:
+			fController.setupFileInterface();
 			break;
 		case NONE:
 			sendMessage("No option was present for loading synched session.", JOptionPane.INFORMATION_MESSAGE);
@@ -173,6 +175,9 @@ public class SynchController {
 		case ORACLE:
 		case SQLITE:
 			this.dbController.endDBSession();
+			break;
+		case XML:
+			this.fController.endFileSession();
 			break;
 		case NONE:
 			sendMessage("No synch was active.", JOptionPane.INFORMATION_MESSAGE);

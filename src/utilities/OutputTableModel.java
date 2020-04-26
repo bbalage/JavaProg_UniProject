@@ -11,6 +11,11 @@ public class OutputTableModel extends DefaultTableModel {
 		//this.types = types;
 	}
 
+	public OutputTableModel(Object[] fieldnames) {
+		super(fieldnames, 0);
+		//this.types = types;
+	}
+	
 	public OutputTableModel() {
 		super();
 	}
