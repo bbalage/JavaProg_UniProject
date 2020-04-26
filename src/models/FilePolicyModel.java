@@ -41,6 +41,7 @@ public class FilePolicyModel {
 		switch(opt) {
 		case 0: appendix = ".csv"; break;
 		case 1: appendix = ".xml"; break;
+		case 2: appendix = ".json"; break;
 		default:
 			throw new MyAppException("Nem támogatott fájl mentési opció a mentés másként funkcióban.");
 		}
@@ -57,6 +58,9 @@ public class FilePolicyModel {
 			break;
 		case 1:
 			startSaveAsXml(sddesc);
+			break;
+		case 2:
+			startSaveAsJson(sddesc);
 			break;
 		}
 	}
@@ -78,6 +82,10 @@ public class FilePolicyModel {
 		
 	}
 	
+	private void startSaveAsJson(SynchedDataDescriptor sddesc) {
+		
+	}
+	
 	private void startSaveAsXml(SynchedDataDescriptor sddesc) throws ParserConfigurationException{
 		DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		this.dom = db.newDocument();
@@ -96,6 +104,20 @@ public class FilePolicyModel {
 	}
 	
 	public void appendRow(Object[] row) {
+		switch(this.saveMode) {
+		case 0:
+			//CSV
+			break;
+		case 1:
+			appendRowXml(row);
+			break;
+		case 2:
+			//appendRowJson(row);
+			break;
+		}
+	}
+	
+	private void appendRowXml(Object[] row) {
 		Element rowE = dom.createElement(this.instancename);
 		for(int i = 0; i < row.length; i++) {
 			Element fieldE = dom.createElement(this.columnnames[i]);
@@ -198,7 +220,6 @@ public class FilePolicyModel {
 		for(int i = 0; i < rowNodes.getLength(); i++) {
 			fieldNodes = getFieldNodesFromXml(rowNodes, i);
 			if(fieldNodes != null) {
-				System.out.println("Was not null: "+fieldNodes.toString());
 				String[] tempvals = getValuesFromXml(fieldNodes,fields);
 				if(tempvals != null) values.add(tempvals);
 			}
@@ -236,7 +257,6 @@ public class FilePolicyModel {
 			try {
 				fieldE = (Element)fieldNodes.item(i);
 				String type = fieldE.getAttribute("mytype");
-				System.out.println("type: "+type);
 				type = type.length()==0 ? null : type;
 				types.add(type);
 			}
@@ -268,8 +288,6 @@ public class FilePolicyModel {
 	private NodeList getFieldNodesFromXml(NodeList rowNodes, int index) {
 		try{
 			Element rowE = (Element)rowNodes.item(index);
-			if(rowE == null) System.out.println("Was null inside function getFieldNodesFromXml");
-			System.out.println("Was NOT null inside function getFieldNodesFromXml");
 			return rowE.getChildNodes();
 		}
 		catch(ClassCastException exc) {

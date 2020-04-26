@@ -38,17 +38,12 @@ public class SavePoll extends JDialog {
 		ButtonGroup btg = new ButtonGroup();
 		
 		JRadioButton rdbtnCsv = new JRadioButton("csv fájlba");
-		rdbtnCsv.setBounds(12, 48, 149, 23);
+		rdbtnCsv.setBounds(12, 50, 149, 23);
 		getContentPane().add(rdbtnCsv);
 		
 		JRadioButton rdbtnXml = new JRadioButton("xml fájlba");
-		rdbtnXml.setBounds(12, 75, 149, 23);
+		rdbtnXml.setBounds(12, 80, 149, 23);
 		getContentPane().add(rdbtnXml);
-
-		btg.add(rdbtnCsv);
-		btg.add(rdbtnXml);
-		
-		rdbtnCsv.setSelected(true);
 		
 		textFileName = new JTextField();
 		textFileName.setBounds(203, 187, 225, 19);
@@ -59,11 +54,21 @@ public class SavePoll extends JDialog {
 		lblFjlnv.setBounds(208, 156, 220, 15);
 		getContentPane().add(lblFjlnv);
 		
+		JRadioButton rdbtnJson = new JRadioButton("json fájlba");
+		rdbtnJson.setBounds(12, 110, 149, 23);
+		getContentPane().add(rdbtnJson);
+		
+		btg.add(rdbtnCsv);
+		btg.add(rdbtnXml);
+		btg.add(rdbtnJson);
+		rdbtnCsv.setSelected(true);
+		
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int opt;
 				if(rdbtnCsv.isSelected()) opt = 0;
 				else if(rdbtnXml.isSelected()) opt = 1;
+				else if(rdbtnJson.isSelected()) opt = 2;
 				else opt = -1;
 				fc.saveAsFile(opt, textFileName.getText());
 			}
