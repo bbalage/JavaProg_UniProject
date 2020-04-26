@@ -13,6 +13,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
+import org.json.JSONException;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -85,6 +86,9 @@ public class FileController {
 		catch(TransformerException exc) {
 			sendMessage("Nem sikerült a mentés művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
+		catch(JSONException exc) {
+			sendMessage("Nem sikerült a mentés művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
 		sendMessage("Sikeres mentés!", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
@@ -139,6 +143,10 @@ public class FileController {
 			ok = false;
 		}
 		catch(TransformerException exc) {
+			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			ok = false;
+		}
+		catch(JSONException exc) {
 			sendMessage("Nem sikerült a mentés másként művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			ok = false;
 		}

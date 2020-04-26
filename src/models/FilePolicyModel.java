@@ -3,6 +3,7 @@ package models;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
@@ -13,6 +14,9 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
+
+import org.json.*;
+import com.google.gson.*;
 
 import utilities.*;
 
@@ -26,6 +30,9 @@ public class FilePolicyModel {
 	private Document dom;
 	private boolean areTypesSet;
 	private Element rootE;
+	private JSONObject jRoot;
+	private JSONArray jArray;
+	private String dataName;
 	private String instancename;
 	private String[] classnames;
 	private String[] columnnames;
@@ -36,7 +43,7 @@ public class FilePolicyModel {
 		this.saveMode = this.synchMode;
 	}
 	
-	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt, boolean overWrite) throws MyAppException, ParserConfigurationException{
+	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt, boolean overWrite) throws MyAppException, ParserConfigurationException, JSONException{
 		String appendix;
 		switch(opt) {
 		case 0: appendix = ".csv"; break;
@@ -52,6 +59,17 @@ public class FilePolicyModel {
 		this.targetFile = new File(path);
 		if(!overWrite && this.targetFile.exists()) throw new MyAppException("Ez a fájl már létezik! A felülírás nem engedélyezett a mentés másként funkcióban.");
 		this.saveMode = opt;
+		this.dataName = sddesc.getDataTypeName();
+		dataName = dataName != null ? dataName : "Untitled";
+		this.instancename = dataName+"instance";
+		this.areTypesSet = sddesc.areTypesSet();
+		if(this.areTypesSet) {
+			this.classnames = sddesc.getTypes(); 
+		}
+		else {
+			this.classnames = null;
+		}
+		this.columnnames = sddesc.getNames();
 		switch(opt) {
 		case 0:
 			//CSV
@@ -65,7 +83,7 @@ public class FilePolicyModel {
 		}
 	}
 	
-	public void save(SynchedDataDescriptor sddesc) throws ParserConfigurationException, IOException, TransformerException, MyAppException{
+	public void save(SynchedDataDescriptor sddesc) throws ParserConfigurationException, IOException, TransformerException, MyAppException, JSONException{
 		startSaveSession();
 		switch(this.saveMode) {
 		case 1:
@@ -73,6 +91,7 @@ public class FilePolicyModel {
 			for(Object[] row : sddesc.getData()) appendRow(row);
 			finishSaveAsXml();
 			break;
+		
 		default:
 			throw new MyAppException("Save mode not supported.");
 		}
@@ -82,28 +101,29 @@ public class FilePolicyModel {
 		
 	}
 	
-	private void startSaveAsJson(SynchedDataDescriptor sddesc) {
-		
+	private void startSaveAsJson(SynchedDataDescriptor sddesc) throws JSONException{
+		this.jRoot = new JSONObject();
+		this.jArray = new JSONArray();
+		if(this.areTypesSet) {
+			JSONArray jArray = new JSONArray();
+			for(int i = 0; i < this.classnames.length; i++) {
+				JSONObject jObj = new JSONObject();
+				jObj.put("mytype", this.classnames[i]);
+				jArray.put(i, jObj);
+			}
+			JSONObject jTypes = new JSONObject();
+			jTypes.put("mytypes", jArray);
+			this.jArray.put(jTypes);
+		}
 	}
 	
 	private void startSaveAsXml(SynchedDataDescriptor sddesc) throws ParserConfigurationException{
 		DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		this.dom = db.newDocument();
-		String dataName = sddesc.getDataTypeName();
-		dataName = dataName != null ? dataName : "Untitled";
 		this.rootE = dom.createElement(dataName);
-		this.instancename = dataName+"instance";
-		this.areTypesSet = sddesc.areTypesSet();
-		if(this.areTypesSet) {
-			this.classnames = sddesc.getTypes(); 
-		}
-		else {
-			this.classnames = null;
-		}
-		this.columnnames = sddesc.getNames();
 	}
 	
-	public void appendRow(Object[] row) {
+	public void appendRow(Object[] row) throws JSONException{
 		switch(this.saveMode) {
 		case 0:
 			//CSV
@@ -112,9 +132,21 @@ public class FilePolicyModel {
 			appendRowXml(row);
 			break;
 		case 2:
-			//appendRowJson(row);
+			appendRowJson(row);
 			break;
 		}
+	}
+	
+	private void appendRowJson(Object[] row) throws JSONException{
+		JSONArray jAr = new JSONArray();
+		for(int i = 0; i < row.length; i++) {
+			JSONObject jObj = new JSONObject();
+			jObj.put(this.columnnames[i], row[i]);
+			jAr.put(i, jObj);
+		}
+		JSONObject jInstance = new JSONObject();
+		jInstance.put(this.instancename, jAr);
+		this.jArray.put(jInstance);
 	}
 	
 	private void appendRowXml(Object[] row) {
@@ -142,13 +174,27 @@ public class FilePolicyModel {
 		tr.transform(new DOMSource(this.dom), new StreamResult(new FileOutputStream(this.targetFile.getAbsolutePath())));
 	}
 	
-	public void finishSave() throws ParserConfigurationException, IOException, TransformerException, MyAppException{
+	private void finishSaveAsJson() throws JSONException, IOException{
+		this.jRoot.put(this.dataName, this.jArray);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson(this.jRoot);
+		PrintStream toJsonFile = new PrintStream(new FileOutputStream(this.targetFile));
+		String[] jsonSplit = json.split("\n");
+		for(String out : jsonSplit) toJsonFile.println(out);
+		toJsonFile.close();
+	}
+	
+	
+	public void finishSave() throws ParserConfigurationException, IOException, TransformerException, MyAppException, JSONException{
 		switch(this.saveMode) {
 		case 0:
 			
 			break;
 		case 1:
 			finishSaveAsXml();
+			break;
+		case 2:
+			finishSaveAsJson();
 			break;
 		default:
 			clearSaveSession();
