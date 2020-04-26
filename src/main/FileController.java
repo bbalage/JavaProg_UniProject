@@ -131,25 +131,51 @@ public class FileController {
 		}
 	}
 	
-	public void insert() {
+	private Object[] fetchFromInputTable() {
 		JTable it = this.mainView.getTableInput();
 		Object[] values = GeneralController.getRow(it, 0);
 		boolean empty = true;
 		for(Object obj : values) if(obj != null) {empty = false; break;}
 		if(empty) {
-			sendMessage("There was no value to be inserted!", JOptionPane.ERROR_MESSAGE);
-			return;
+			sendMessage("There was no input value!", JOptionPane.ERROR_MESSAGE);
+			return null;
 		}
 		try {
 			gc.checkIfConvertable(values, this.sddesc.getTypes());
 		}
 		catch(MyAppException exc) {
 			sendMessage("Could not convert: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
-			return;
+			return null;
 		}
+		return values;
+	}
+	
+	public void insert() {
+		Object[] values = fetchFromInputTable();
+		if(values == null) return;
 		this.sddesc.getData().add(values);
 		((OutputTableModel)this.mainView.getTableOutput().getModel()).addRow(values);
 		sendMessage("Insert sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	public void update() {
+		Object[] values = fetchFromInputTable();
+		if(values == null) return;
+		JTable ot = this.mainView.getTableOutput();
+		int selected;
+		try{
+			selected = GeneralController.getSelectedIndeces(ot);
+		}
+		catch(MyAppException exc) {
+			sendMessage("Update failed: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		this.sddesc.getData().set(selected, values);
+		OutputTableModel otm = (OutputTableModel)ot.getModel();
+		for(int i = 0; i < values.length; i++) {
+			otm.setValueAt(values[i], selected, i);
+		}
+		sendMessage("Update sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public void buildTablesFromSDDesc() {

@@ -138,7 +138,7 @@ public class SynchController {
 		case XML:
 			switch(type) {
 			case 0:	this.fController.insert(); break;
-			//case 1:	this.fcController.update(); break;
+			case 1:	this.fController.update(); break;
 			//case 2: this.fcController.delete(); break;
 			}
 			break;
