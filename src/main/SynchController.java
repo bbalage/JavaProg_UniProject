@@ -139,7 +139,7 @@ public class SynchController {
 			switch(type) {
 			case 0:	this.fController.insert(); break;
 			case 1:	this.fController.update(); break;
-			//case 2: this.fcController.delete(); break;
+			case 2: this.fController.delete(); break;
 			}
 			break;
 		case NONE:
@@ -196,6 +196,10 @@ public class SynchController {
 	
 	public void setSddesc(SynchedDataDescriptor sddesc) {
 		this.sddesc = sddesc;
+	}
+	
+	public void save() {
+		fController.saveBySDDesc();
 	}
 	
 	public void saveAs() {

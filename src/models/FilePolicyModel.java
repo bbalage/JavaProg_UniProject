@@ -19,14 +19,22 @@ import utilities.*;
 public class FilePolicyModel {
 
 	private File targetFile;
+	private File synchedFile = null;
 	private String separator = System.getProperty("file.separator");
-	private int mode; //0: csv; 1: xml
+	private int saveMode; //0: csv; 1: xml
+	private int synchMode;
 	private Document dom;
 	private boolean areTypesSet;
 	private Element rootE;
 	private String instancename;
 	private String[] classnames;
 	private String[] columnnames;
+	private GeneralChecker gc = new GeneralChecker();
+	
+	private void startSaveSession() {
+		this.targetFile = this.synchedFile;
+		this.saveMode = this.synchMode;
+	}
 	
 	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt, boolean overWrite) throws MyAppException, ParserConfigurationException{
 		String appendix;
@@ -42,16 +50,27 @@ public class FilePolicyModel {
 		String path = targetDir.getAbsolutePath()+separator+targetName;
 		this.targetFile = new File(path);
 		if(!overWrite && this.targetFile.exists()) throw new MyAppException("Ez a fájl már létezik! A felülírás nem engedélyezett a mentés másként funkcióban.");
-		this.mode = opt;
+		this.saveMode = opt;
 		switch(opt) {
 		case 0:
 			//CSV
 			break;
 		case 1:
 			startSaveAsXml(sddesc);
-			
 			break;
-		
+		}
+	}
+	
+	public void save(SynchedDataDescriptor sddesc) throws ParserConfigurationException, IOException, TransformerException, MyAppException{
+		startSaveSession();
+		switch(this.saveMode) {
+		case 1:
+			startSaveAsXml(sddesc);
+			for(Object[] row : sddesc.getData()) appendRow(row);
+			finishSaveAsXml();
+			break;
+		default:
+			throw new MyAppException("Save mode not supported.");
 		}
 	}
 	
@@ -59,7 +78,7 @@ public class FilePolicyModel {
 		
 	}
 	
-	public void startSaveAsXml(SynchedDataDescriptor sddesc) throws ParserConfigurationException{
+	private void startSaveAsXml(SynchedDataDescriptor sddesc) throws ParserConfigurationException{
 		DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		this.dom = db.newDocument();
 		String dataName = sddesc.getDataTypeName();
@@ -88,7 +107,7 @@ public class FilePolicyModel {
 		this.rootE.appendChild(rowE);
 	}
 	
-	public void finishSaveAsXml() throws ParserConfigurationException, IOException, TransformerException{
+	private void finishSaveAsXml() throws ParserConfigurationException, IOException, TransformerException{
 		dom.appendChild(this.rootE);
 		Transformer tr = TransformerFactory.newInstance().newTransformer();
 		tr.setOutputProperty(OutputKeys.INDENT, "yes");
@@ -98,9 +117,23 @@ public class FilePolicyModel {
 		tr.transform(new DOMSource(this.dom), new StreamResult(new FileOutputStream(this.targetFile.getAbsolutePath())));
 	}
 	
+	public void finishSave() throws ParserConfigurationException, IOException, TransformerException, MyAppException{
+		switch(this.saveMode) {
+		case 0:
+			
+			break;
+		case 1:
+			finishSaveAsXml();
+			break;
+		default:
+			clearSaveSession();
+			throw new MyAppException("Unsupported save option.");
+		}
+	}
+	
 	public void clearSaveSession() {
 		this.dom = null;
-		this.mode = -1;
+		this.saveMode = -1;
 		this.rootE = null;
 		this.targetFile = null;
 		this.instancename = null;
@@ -132,6 +165,8 @@ public class FilePolicyModel {
 		default:
 			throw new MyAppException("Unsupported option for read session.");
 		}
+		this.synchMode = opt;
+		this.synchedFile = source;
 		return sddesc;
 	}
 	
@@ -174,7 +209,7 @@ public class FilePolicyModel {
 			System.out.println();
 		}*/
 		if(typesSet) {
-			if(!checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
+			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
 		}
 		String dataTypeName = rootE.getTagName();
 		SynchedDataDescriptor sddesc = null;
@@ -242,19 +277,5 @@ public class FilePolicyModel {
 		catch(ClassCastException exc) {
 			return null;
 		}
-	}
-	
-	public boolean checkIfCanonicalNames(String[] names) {
-		for(int i = 0; i < names.length; i++) {
-			System.out.println(names[i]);
-			if(!(names[i].equals(String.class.getCanonicalName()) ||
-					names[i].equals(Integer.class.getCanonicalName()) ||
-					names[i].equals(java.util.Date.class.getCanonicalName()) ||
-					names[i].equals(java.sql.Date.class.getCanonicalName()) ||
-					names[i].equals(java.sql.Timestamp.class.getCanonicalName()))){
-				return false;
-			}
-		}
-		return true;
 	}
 }

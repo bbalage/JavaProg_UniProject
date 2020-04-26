@@ -36,7 +36,6 @@ public class FileController {
 		SynchedDataDescriptor sddesc = null;
 		try {
 			sddesc = flm.readFromFile(source, opt);
-			
 		}
 		catch(MyAppException exc) {
 			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
@@ -68,6 +67,25 @@ public class FileController {
 		this.mainView.getTableInput().setModel(new DefaultTableModel());
 		this.mainView.getTableOutput().setModel(new OutputTableModel());
 		this.mainView.switchToHomeCard();
+	}
+	
+	public void saveBySDDesc(){
+		try{
+			this.flm.save(this.sddesc);
+		}
+		catch(MyAppException exc) {
+			sendMessage("Nem sikerült a mentés művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+		catch(ParserConfigurationException exc) {
+			sendMessage("Nem sikerült a mentés művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+		catch(IOException exc) {
+			sendMessage("Nem sikerült a mentés művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+		catch(TransformerException exc) {
+			sendMessage("Nem sikerült a mentés művelet: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+		sendMessage("Sikeres mentés!", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public void saveAs(SynchedDataDescriptor sddesc) {
@@ -103,7 +121,7 @@ public class FileController {
 				for(int i = 0; i < trows; i++) {
 					flm.appendRow(GeneralController.getRow(jt, i));
 				}
-				flm.finishSaveAsXml();
+				flm.finishSave();
 			}
 		}
 		catch(MyAppException exc) {
@@ -176,6 +194,21 @@ public class FileController {
 			otm.setValueAt(values[i], selected, i);
 		}
 		sendMessage("Update sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	public void delete() {
+		JTable ot = this.mainView.getTableOutput();
+		int selected;
+		try{
+			selected = GeneralController.getSelectedIndeces(ot);
+		}
+		catch(MyAppException exc) {
+			sendMessage("Update failed: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		this.sddesc.getData().remove(selected);
+		((OutputTableModel)ot.getModel()).removeRow(selected);
+		sendMessage("Delete sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public void buildTablesFromSDDesc() {

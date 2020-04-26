@@ -128,4 +128,18 @@ public class GeneralChecker {
 		java.util.Date dt = convertToDate(text);
 		return new java.sql.Date(dt.getTime());
 	}
+	
+	public boolean checkIfCanonicalNames(String[] names) {
+		for(int i = 0; i < names.length; i++) {
+			System.out.println(names[i]);
+			if(!(names[i].equals(String.class.getCanonicalName()) ||
+					names[i].equals(Integer.class.getCanonicalName()) ||
+					names[i].equals(java.util.Date.class.getCanonicalName()) ||
+					names[i].equals(java.sql.Date.class.getCanonicalName()) ||
+					names[i].equals(java.sql.Timestamp.class.getCanonicalName()))){
+				return false;
+			}
+		}
+		return true;
+	}
 }

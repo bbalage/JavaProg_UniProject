@@ -193,6 +193,11 @@ public class MainView extends JFrame {
 		tablePanel.add(btnHelp);
 		
 		btnSave = new JButton("Mentés");
+		btnSave.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.save();
+			}
+		});
 		btnSave.setBounds(50, 173, 170, 25);
 		tablePanel.add(btnSave);
 	}
