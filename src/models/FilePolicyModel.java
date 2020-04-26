@@ -106,7 +106,7 @@ public class FilePolicyModel {
 		this.instancename = null;
 	}
 	
-	public void startReadSession(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException{
+	public SynchedDataDescriptor readFromFile(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException{
 		//if(!source.exists()) throw new MyAppException("File does not exist!");
 		if(source.isDirectory()) throw new MyAppException("Chosen file was a directory!");
 		String fileName = source.getName();
@@ -118,67 +118,122 @@ public class FilePolicyModel {
 			throw new MyAppException("Nem támogatott fájl mentési opció a mentés másként funkcióban.");
 		}
 		if(fileName.length() > appendix.length()) {
-			if(fileName.substring(fileName.length()-appendix.length(), fileName.length()).equals(appendix)) throw new MyAppException("File does not have xml extension.");
+			if(!fileName.substring(fileName.length()-appendix.length(), fileName.length()).equals(appendix)) throw new MyAppException("File does not have xml extension.");
 		}
-		else throw new MyAppException("File does not have xml extension.");
+		else throw new MyAppException("File does not have " + appendix + "extension.");
+		SynchedDataDescriptor sddesc = null;
 		switch(opt) {
 		case 0:
 			//CSV
 			break;
 		case 1:
-			readXml(source);
+			sddesc = readXml(source);
 			break;
 		default:
 			throw new MyAppException("Unsupported option for read session.");
 		}
+		return sddesc;
 	}
 	
-	public void readXml(File source) throws ParserConfigurationException, IOException, SAXException, MyAppException{
+	public SynchedDataDescriptor readXml(File source) throws ParserConfigurationException, IOException, SAXException, MyAppException{
 		DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document dom  = db.parse(source);
 		NodeList nodeList = dom.getChildNodes();
 		if(nodeList.getLength() != 1) throw new MyAppException("Number of root elements in xml is invalid.");
 		Element rootE = (Element)nodeList.item(0);
 		nodeList = rootE.getChildNodes();
-		String[] types = null;
-		String[] names = null;
-		ArrayList<String[]> values = new ArrayList<String[]>();
-		boolean typesSet = true;
+		int fields = 0;
 		for(int i = 0; i < nodeList.getLength(); i++) {
-			Element rowE = (Element)nodeList.item(i);
+			try{
+				Element rowE = (Element)nodeList.item(i);
+				fields = rowE.getChildNodes().getLength();
+			}
+			catch(ClassCastException exc) {
+				continue;
+			}
+		}
+		System.out.println("Fields: "+fields);
+		classnames = new String[fields];
+		columnnames = new String[fields];
+		for(int i = 0; i < fields; i++) {
+			classnames[i] = "";
+		}
+		String[] textNodes = new String[fields];
+		ArrayList<Object[]> values = new ArrayList<Object[]>();
+		boolean typesSet = true;
+		boolean gotRow = false;
+		for(int i = 0; i < nodeList.getLength(); i++) {
+			Element rowE;
+			try{
+				rowE = (Element)nodeList.item(i);
+			}
+			catch(ClassCastException exc) {
+				continue;
+			}
 			NodeList fieldNodes = rowE.getChildNodes();
-			int fields = fieldNodes.getLength();
-			if(i == 0) types = new String[fields];
-			if(i == 0) names = new String[fields];
-			String[] textNodes = new String[fields];
 			for(int j = 0; j < fields; j++) {
-				Element fieldE = (Element)fieldNodes.item(j);
-				if(i == 0) names[j] = fieldE.getTagName();
+				Element fieldE;
+				try{
+					fieldE = (Element)fieldNodes.item(j);
+				}
+				catch(ClassCastException exc) {
+					continue;
+				}
+				if(!gotRow) columnnames[j] = fieldE.getTagName();
 				else {
-					if(!names[j].equals(fieldE.getTagName())) throw new MyAppException("Name mismatch in xml.");
+					if(!columnnames[j].equals(fieldE.getTagName())) throw new MyAppException("Name mismatch in xml.");
 				}
 				Attr attr = fieldE.getAttributeNode("mytype");
+				//System.out.println("Got to checking attribute.");
 				if(typesSet) {
 					if(attr == null) {
+						System.out.println("Attribute was null.");
 						typesSet = false;
-						types = null;
+						classnames = null;
 					}
 					else {
-						if(types[j] == null) types[j] = attr.getTextContent();
+						//System.out.println("Before types[j] == 0 check "+attr.getTextContent());
+						if(classnames[j].length() == 0) {
+							System.out.println("Attribute text value: "+attr.getNodeValue());
+							classnames[j] = attr.getNodeValue();
+							System.out.println("classnames[j] value1: "+classnames[j]);
+						}
 						else {
-							if(!types[j].equals(attr.getTextContent())) throw new MyAppException("Type mismatch in xml.");
+							if(!classnames[j].equals(attr.getTextContent())) throw new MyAppException("Type mismatch in xml.");
 						}
 					}
+					System.out.println("classnames[j] value2: "+classnames[j]);
 				}
+				System.out.println("classnames[j] value3: "+classnames[j]);
 				textNodes[j] = fieldE.getTextContent();
 			}
+			System.out.println("classnames[0] value4: "+classnames[0]);
 			values.add(textNodes);
+			gotRow = true;
 		}
 		String dataTypeName = rootE.getTagName();
-		ArrayList<String> datanames = new ArrayList<String>();
-		for(String s : names) datanames.add(s);
-		ArrayList<Class<?>> cls = new ArrayList<Class<?>>();
-		//if()
-		//SynchedDataDescriptor sddesc = new SynchedDataDescriptor(dataTypeName, types, datanames, typesSet, values);
+		System.out.println(values.get(0)[0]);
+		System.out.println(dataTypeName);
+		if(typesSet) {
+			if(!checkIfCanonicalNames(classnames)) throw new MyAppException("Type attributes are not all canonical names.");
+		}
+		SynchedDataDescriptor sddesc;
+		if(typesSet) sddesc = new SynchedDataDescriptor(dataTypeName, classnames, columnnames, typesSet, values);
+		else sddesc = new SynchedDataDescriptor(dataTypeName, null, columnnames, typesSet, values);
+		return sddesc;
+	}
+	
+	public boolean checkIfCanonicalNames(String[] names) {
+		for(int i = 0; i < names.length; i++) {
+			System.out.println(names[i]);
+			if(!(names[i].equals(String.class.getCanonicalName()) ||
+					names[i].equals(Integer.class.getCanonicalName()) ||
+					names[i].equals(java.util.Date.class.getCanonicalName()) ||
+					names[i].equals(java.sql.Date.class.getCanonicalName()) ||
+					names[i].equals(java.sql.Timestamp.class.getCanonicalName()))){
+				return false;
+			}
+		}
+		return true;
 	}
 }

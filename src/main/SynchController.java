@@ -68,7 +68,7 @@ public class SynchController {
 		int ret = jfc.showOpenDialog(this.sPoll);
 		if(ret == JFileChooser.APPROVE_OPTION) {
 			File xmlFile = jfc.getSelectedFile();
-			//this.sddesc = this.fController.loadXmlFile();
+			this.sddesc = this.fController.loadFile(xmlFile, 1);
 		}
 		if(this.sddesc != null) {
 			sendMessage("Sikeres kapcsolódás az xml fájllal.", JOptionPane.INFORMATION_MESSAGE);

@@ -13,6 +13,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
 import org.w3c.dom.*;
+import org.xml.sax.SAXException;
 
 import models.*;
 import utilities.*;
@@ -29,16 +30,10 @@ public class FileController {
 		this.mainView = mainView;
 	}
 	
-	/*public SynchedDataDescriptor loadFile(int opt) {
+	public SynchedDataDescriptor loadFile(File source, int opt) {
+		SynchedDataDescriptor sddesc = null;
 		try {
-			JFileChooser jfc = new JFileChooser();
-			int ret = jfc.showSaveDialog(this.mainView);
-			File source;
-			if(ret == JFileChooser.APPROVE_OPTION) {
-				source = new File(jfc.getSelectedFile().getAbsolutePath());
-			}
-			else return null;
-			flm.startReadSession(source, opt);
+			sddesc = flm.readFromFile(source, opt);
 			
 		}
 		catch(MyAppException exc) {
@@ -48,9 +43,15 @@ public class FileController {
 		catch(IOException exc) {
 			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			return null;
+		} catch (ParserConfigurationException exc) {
+			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return null;
+		} catch (SAXException exc) {
+			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return null;
 		}
-		return null;
-	}*/
+		return sddesc;
+	}
 	
 	public void saveAs(SynchedDataDescriptor sddesc) {
 		this.sddesc = sddesc;
