@@ -23,8 +23,6 @@ public class MainView extends JFrame {
 	private JPanel contentPane;
 	private JPanel cardPanel;
 	private SynchController synchController;
-	private DatabaseController dbController;
-	private FileController fController;
 	private JTable tableFieldNames;
 	private JTable tableInput;
 	private JTable tableOutput;
@@ -53,9 +51,7 @@ public class MainView extends JFrame {
 	 * Create the frame.
 	 */
 	public MainView() {
-		this.dbController = new DatabaseController(MainView.this);
-		this.fController = new FileController(MainView.this);
-		this.synchController = new SynchController(this.dbController, this.fController);
+		this.synchController = new SynchController(MainView.this);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 0, 1024, 768);
 		contentPane = new JPanel();
@@ -75,7 +71,7 @@ public class MainView extends JFrame {
 		JButton btnSynchronize = new JButton("Szinkronizálás");
 		btnSynchronize.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				synchController.startSynchSession(MainView.this);
+				synchController.startSynchSession();
 			}
 		});
 		btnSynchronize.setBounds(36, 136, 144, 25);
@@ -94,7 +90,7 @@ public class MainView extends JFrame {
 		comboBoxTableNames.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent e) {
 				if (e.getStateChange() == ItemEvent.SELECTED) {
-					dbController.tableSelected();
+					synchController.tableSelected();
 				}
 			}
 		});

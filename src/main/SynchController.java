@@ -25,9 +25,10 @@ public class SynchController {
 	private FileController fController;
 	private SynchedDataDescriptor sddesc;
 	
-	SynchController(DatabaseController dbc, FileController fc){
-		this.dbController = dbc;
-		this.fController = fc;
+	SynchController(MainView mv){
+		this.dbController = new DatabaseController(mv);
+		this.fController = new FileController(mv);
+		this.mainView = mv;
 	}
 	
 	public void synchWithType(SynchOption sOpt) {
@@ -47,9 +48,8 @@ public class SynchController {
 		}
 		}
 	
-	public void startSynchSession(JFrame owner) {
-		this.mainView = (MainView) owner;
-		this.sPoll = new SynchPoll(owner, SynchController.this);
+	public void startSynchSession() {
+		this.sPoll = new SynchPoll(this.mainView, SynchController.this);
 		this.sPoll.setVisible(true);
 		
 	}
@@ -200,6 +200,10 @@ public class SynchController {
 	
 	public void save() {
 		fController.saveBySDDesc();
+	}
+	
+	public void tableSelected() {
+		this.dbController.tableSelected();
 	}
 	
 	public void saveAs() {
