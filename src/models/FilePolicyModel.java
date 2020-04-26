@@ -88,8 +88,11 @@ public class FilePolicyModel {
 		this.areTypesSet = sddesc.areTypesSet();
 		if(this.areTypesSet) {
 			this.classnames = sddesc.getTypes(); 
-			this.columnnames = sddesc.getNames();
 		}
+		else {
+			this.classnames = null;
+		}
+		this.columnnames = sddesc.getNames();
 	}
 	
 	public void appendRow(Object[] row) {
@@ -129,6 +132,7 @@ public class FilePolicyModel {
 			clearSaveSession();
 			throw new MyAppException("Unsupported save option.");
 		}
+		clearSaveSession();
 	}
 	
 	public void clearSaveSession() {
@@ -140,7 +144,6 @@ public class FilePolicyModel {
 	}
 	
 	public SynchedDataDescriptor readFromFile(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException{
-		//if(!source.exists()) throw new MyAppException("File does not exist!");
 		if(source.isDirectory()) throw new MyAppException("Chosen file was a directory!");
 		String fileName = source.getName();
 		String appendix;
@@ -181,17 +184,16 @@ public class FilePolicyModel {
 		for(int i = 0; i < rowNodes.getLength(); i++) {
 			fieldNodes = getFieldNodesFromXml(rowNodes, i);
 			if(fieldNodes != null) {
-				System.out.println("Was not null: "+fieldNodes.toString());
 				break;
 			}
 		}
-		System.out.println(fieldNodes.toString());
 		String[] names = getFieldNamesFromXml(fieldNodes);
-		//for(String nm : names) System.out.println("Name: "+nm);
 		String[] types = getFieldTypesFromXml(fieldNodes);
 		boolean typesSet = types != null;
+		if(typesSet) {
+			for(int i = 0; i < types.length; i++) if(types[i] == null) typesSet = false;
+		}
 		int fields = names.length;
-		//for(String ts : types) System.out.println("Types: "+ts);
 		ArrayList<Object[]> values = new ArrayList<Object[]>();
 		for(int i = 0; i < rowNodes.getLength(); i++) {
 			fieldNodes = getFieldNodesFromXml(rowNodes, i);
@@ -201,13 +203,6 @@ public class FilePolicyModel {
 				if(tempvals != null) values.add(tempvals);
 			}
 		}
-		/*for(String[] row : values) {
-			for(String field : row) {
-				System.out.print(field);
-				System.out.print(" ");
-			}
-			System.out.println();
-		}*/
 		if(typesSet) {
 			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
 		}
@@ -240,7 +235,10 @@ public class FilePolicyModel {
 		for(int i = 0; i < fieldNodes.getLength(); i++) {
 			try {
 				fieldE = (Element)fieldNodes.item(i);
-				types.add(fieldE.getAttribute("mytype"));
+				String type = fieldE.getAttribute("mytype");
+				System.out.println("type: "+type);
+				type = type.length()==0 ? null : type;
+				types.add(type);
 			}
 			catch(ClassCastException exc) {
 				continue;

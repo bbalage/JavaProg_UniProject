@@ -112,8 +112,10 @@ public class FileController {
 			flm.startSaveSession(this.sddesc, targetDir, targetFileName, opt, false);
 			boolean dataInMemory = this.sddesc.getData() != null;
 			if(dataInMemory) {
-				System.out.println("Data was in memory.");
-				flm.clearSaveSession();
+				for(int i = 0; i < this.sddesc.getData().size(); i++) {
+					flm.appendRow(this.sddesc.getData().get(i));
+				}
+				flm.finishSave();
 			}
 			else {
 				JTable jt = this.mainView.getTableOutput();
@@ -158,12 +160,14 @@ public class FileController {
 			sendMessage("There was no input value!", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
-		try {
-			gc.checkIfConvertable(values, this.sddesc.getTypes());
-		}
-		catch(MyAppException exc) {
-			sendMessage("Could not convert: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
-			return null;
+		if(this.sddesc.areTypesSet()) {
+			try {
+				gc.checkIfConvertable(values, this.sddesc.getTypes());
+			}
+			catch(MyAppException exc) {
+				sendMessage("Could not convert: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+				return null;
+			}
 		}
 		return values;
 	}
