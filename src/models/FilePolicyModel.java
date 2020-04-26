@@ -141,86 +141,107 @@ public class FilePolicyModel {
 		NodeList nodeList = dom.getChildNodes();
 		if(nodeList.getLength() != 1) throw new MyAppException("Number of root elements in xml is invalid.");
 		Element rootE = (Element)nodeList.item(0);
-		nodeList = rootE.getChildNodes();
-		int fields = 0;
-		for(int i = 0; i < nodeList.getLength(); i++) {
-			try{
-				Element rowE = (Element)nodeList.item(i);
-				fields = rowE.getChildNodes().getLength();
-			}
-			catch(ClassCastException exc) {
-				continue;
+		NodeList rowNodes = rootE.getChildNodes();
+		NodeList fieldNodes = null;
+		for(int i = 0; i < rowNodes.getLength(); i++) {
+			fieldNodes = getFieldNodesFromXml(rowNodes, i);
+			if(fieldNodes != null) {
+				System.out.println("Was not null: "+fieldNodes.toString());
+				break;
 			}
 		}
-		System.out.println("Fields: "+fields);
-		classnames = new String[fields];
-		columnnames = new String[fields];
-		for(int i = 0; i < fields; i++) {
-			classnames[i] = "";
-		}
-		String[] textNodes = new String[fields];
+		System.out.println(fieldNodes.toString());
+		String[] names = getFieldNamesFromXml(fieldNodes);
+		//for(String nm : names) System.out.println("Name: "+nm);
+		String[] types = getFieldTypesFromXml(fieldNodes);
+		boolean typesSet = types != null;
+		int fields = names.length;
+		//for(String ts : types) System.out.println("Types: "+ts);
 		ArrayList<Object[]> values = new ArrayList<Object[]>();
-		boolean typesSet = true;
-		boolean gotRow = false;
-		for(int i = 0; i < nodeList.getLength(); i++) {
-			Element rowE;
-			try{
-				rowE = (Element)nodeList.item(i);
+		for(int i = 0; i < rowNodes.getLength(); i++) {
+			fieldNodes = getFieldNodesFromXml(rowNodes, i);
+			if(fieldNodes != null) {
+				System.out.println("Was not null: "+fieldNodes.toString());
+				String[] tempvals = getValuesFromXml(fieldNodes,fields);
+				if(tempvals != null) values.add(tempvals);
 			}
-			catch(ClassCastException exc) {
-				continue;
+		}
+		/*for(String[] row : values) {
+			for(String field : row) {
+				System.out.print(field);
+				System.out.print(" ");
 			}
-			NodeList fieldNodes = rowE.getChildNodes();
-			for(int j = 0; j < fields; j++) {
-				Element fieldE;
-				try{
-					fieldE = (Element)fieldNodes.item(j);
-				}
-				catch(ClassCastException exc) {
-					continue;
-				}
-				if(!gotRow) columnnames[j] = fieldE.getTagName();
-				else {
-					if(!columnnames[j].equals(fieldE.getTagName())) throw new MyAppException("Name mismatch in xml.");
-				}
-				Attr attr = fieldE.getAttributeNode("mytype");
-				//System.out.println("Got to checking attribute.");
-				if(typesSet) {
-					if(attr == null) {
-						System.out.println("Attribute was null.");
-						typesSet = false;
-						classnames = null;
-					}
-					else {
-						//System.out.println("Before types[j] == 0 check "+attr.getTextContent());
-						if(classnames[j].length() == 0) {
-							System.out.println("Attribute text value: "+attr.getNodeValue());
-							classnames[j] = attr.getNodeValue();
-							System.out.println("classnames[j] value1: "+classnames[j]);
-						}
-						else {
-							if(!classnames[j].equals(attr.getTextContent())) throw new MyAppException("Type mismatch in xml.");
-						}
-					}
-					System.out.println("classnames[j] value2: "+classnames[j]);
-				}
-				System.out.println("classnames[j] value3: "+classnames[j]);
-				textNodes[j] = fieldE.getTextContent();
-			}
-			System.out.println("classnames[0] value4: "+classnames[0]);
-			values.add(textNodes);
-			gotRow = true;
+			System.out.println();
+		}*/
+		if(typesSet) {
+			if(!checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
 		}
 		String dataTypeName = rootE.getTagName();
-		System.out.println(values.get(0)[0]);
-		System.out.println(dataTypeName);
-		if(typesSet) {
-			if(!checkIfCanonicalNames(classnames)) throw new MyAppException("Type attributes are not all canonical names.");
-		}
-		SynchedDataDescriptor sddesc;
-		if(typesSet) sddesc = new SynchedDataDescriptor(dataTypeName, classnames, columnnames, typesSet, values);
-		else sddesc = new SynchedDataDescriptor(dataTypeName, null, columnnames, typesSet, values);
+		SynchedDataDescriptor sddesc = null;
+		if(typesSet) sddesc = new SynchedDataDescriptor(dataTypeName, types, names, typesSet, values);
+		else sddesc = new SynchedDataDescriptor(dataTypeName, null, names, typesSet, values);
 		return sddesc;
+	}
+	
+	private String[] getValuesFromXml(NodeList fieldNodes, int fields) throws MyAppException{
+		Element fieldE;
+		ArrayList<String> values = new ArrayList<String>();
+		for(int i = 0; i < fieldNodes.getLength(); i++) {
+			try {
+				fieldE = (Element)fieldNodes.item(i);
+				values.add(fieldE.getTextContent());
+			}
+			catch(ClassCastException exc) {
+				continue;
+			}
+		}
+		if(values.size()!=fields) throw new MyAppException("File content does not match table content structure.");
+		return values.toArray(new String[0]);
+	}
+	
+	private String[] getFieldTypesFromXml(NodeList fieldNodes) {
+		Element fieldE;
+		ArrayList<String> types = new ArrayList<String>();
+		for(int i = 0; i < fieldNodes.getLength(); i++) {
+			try {
+				fieldE = (Element)fieldNodes.item(i);
+				types.add(fieldE.getAttribute("mytype"));
+			}
+			catch(ClassCastException exc) {
+				continue;
+			}
+		}
+		if(types.size()==0) return null;
+		String[] ret =  types.toArray(new String[0]);
+		for(String ts : ret) if(ts == null) return null;
+		return ret;
+	}
+	
+	private String[] getFieldNamesFromXml(NodeList fieldNodes) {
+		Element fieldE;
+		ArrayList<String> names = new ArrayList<String>();
+		for(int i = 0; i < fieldNodes.getLength(); i++) {
+			try {
+				fieldE = (Element)fieldNodes.item(i);
+				names.add(fieldE.getTagName());
+			}
+			catch(ClassCastException exc) {
+				continue;
+			}
+		}
+		return names.toArray(new String[0]);
+	}
+	
+	private NodeList getFieldNodesFromXml(NodeList rowNodes, int index) {
+		try{
+			Element rowE = (Element)rowNodes.item(index);
+			if(rowE == null) System.out.println("Was null inside function getFieldNodesFromXml");
+			System.out.println("Was NOT null inside function getFieldNodesFromXml");
+			return rowE.getChildNodes();
+		}
+		catch(ClassCastException exc) {
+			return null;
+		}
 	}
 	
 	public boolean checkIfCanonicalNames(String[] names) {
