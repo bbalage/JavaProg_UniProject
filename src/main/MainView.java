@@ -188,13 +188,13 @@ public class MainView extends JFrame {
 		btnSaveAs.setBounds(25, 678, 203, 25);
 		tablePanel.add(btnSaveAs);
 		
-		btnSave = new JButton("Mentés");
-		btnSave.setBounds(301, 678, 167, 25);
-		tablePanel.add(btnSave);
-		
 		JButton btnHelp = new JButton("Help");
 		btnHelp.setBounds(891, 678, 117, 25);
 		tablePanel.add(btnHelp);
+		
+		btnSave = new JButton("Mentés");
+		btnSave.setBounds(50, 173, 170, 25);
+		tablePanel.add(btnSave);
 	}
 	
 	void switchToTableCard() {

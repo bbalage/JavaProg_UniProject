@@ -25,6 +25,7 @@ public class FileController {
 	private SavePoll sp;
 	private SynchedDataDescriptor sddesc;
 	private FilePolicyModel flm = new FilePolicyModel();
+	private GeneralChecker gc = new GeneralChecker();
 	
 	public FileController(MainView mainView) {
 		super();
@@ -100,7 +101,7 @@ public class FileController {
 				JTable jt = this.mainView.getTableOutput();
 				int trows = jt.getRowCount();
 				for(int i = 0; i < trows; i++) {
-					flm.appendRow(SynchController.getRow(jt, i));
+					flm.appendRow(GeneralController.getRow(jt, i));
 				}
 				flm.finishSaveAsXml();
 			}
@@ -130,8 +131,28 @@ public class FileController {
 		}
 	}
 	
+	public void insert() {
+		JTable it = this.mainView.getTableInput();
+		Object[] values = GeneralController.getRow(it, 0);
+		boolean empty = true;
+		for(Object obj : values) if(obj != null) {empty = false; break;}
+		if(empty) {
+			sendMessage("There was no value to be inserted!", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		try {
+			gc.checkIfConvertable(values, this.sddesc.getTypes());
+		}
+		catch(MyAppException exc) {
+			sendMessage("Could not convert: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		this.sddesc.getData().add(values);
+		((OutputTableModel)this.mainView.getTableOutput().getModel()).addRow(values);
+		sendMessage("Insert sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
 	public void buildTablesFromSDDesc() {
-		//ArrayList<Object> objs = new ArrayList<Object>();
 		Object[] names = this.sddesc.getNames();
 		String[] types = this.sddesc.getTypes();
 		JTable it = this.mainView.getTableInput();

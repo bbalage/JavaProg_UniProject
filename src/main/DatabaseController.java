@@ -138,7 +138,7 @@ public class DatabaseController {
 	
 	public void insert() {
 		try {
-			Object[] values = SynchController.getRow(this.mainView.getTableInput(), 0);
+			Object[] values = GeneralController.getRow(this.mainView.getTableInput(), 0);
 			values = gc.formatRow(values, this.sddesc.getTypes());
 			dbapi.baseInsert(this.sddesc.getTypes(), values);
 			buildTableFromResultSet(2);
@@ -154,9 +154,9 @@ public class DatabaseController {
 	
 	public void update() {
 		try {
-			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
-			Object[] inputValues = SynchController.getRow(this.mainView.getTableInput(), 0);
-			Object[] oldValues = SynchController.getRow(this.mainView.getTableOutput(), sel);
+			int sel = GeneralController.getSelectedIndeces(this.mainView.getTableOutput());
+			Object[] inputValues = GeneralController.getRow(this.mainView.getTableInput(), 0);
+			Object[] oldValues = GeneralController.getRow(this.mainView.getTableOutput(), sel);
 			inputValues = gc.formatRow(inputValues, sddesc.getTypes());
 			oldValues = gc.formatRow(oldValues, sddesc.getTypes());
 			dbapi.update(this.sddesc, inputValues, oldValues);
@@ -172,8 +172,8 @@ public class DatabaseController {
 	
 	public void delete() {
 		try {
-			int sel = SynchController.getSelectedIndeces(this.mainView.getTableOutput());
-			Object [] conds = SynchController.getRow(this.mainView.getTableOutput(), sel);
+			int sel = GeneralController.getSelectedIndeces(this.mainView.getTableOutput());
+			Object [] conds = GeneralController.getRow(this.mainView.getTableOutput(), sel);
 			conds = gc.formatRow(conds, sddesc.getTypes());
 			dbapi.delete(this.sddesc, conds);
 			buildTableFromResultSet(2);

@@ -103,7 +103,7 @@ public class SynchController {
 	//Where is sPoll disposed of?
 	public void loginToOracle() {
 		String username = lView.getTextUsername().getText();
-		String password = charsToString(lView.getPasswordField().getPassword());
+		String password = GeneralController.charsToString(lView.getPasswordField().getPassword());
 		String workspace = lView.getCheckBoxWorkspace().isSelected() ? username : lView.getTextWorkspace().getText();
 		boolean ok;
 		if(lView.getCheckBoxDefaultServer().isSelected()) {
@@ -133,6 +133,13 @@ public class SynchController {
 			case 0:	this.dbController.insert(); break;
 			case 1:	this.dbController.update(); break;
 			case 2: this.dbController.delete(); break;
+			}
+			break;
+		case XML:
+			switch(type) {
+			case 0:	this.fController.insert(); break;
+			//case 1:	this.fcController.update(); break;
+			//case 2: this.fcController.delete(); break;
 			}
 			break;
 		case NONE:
@@ -198,36 +205,9 @@ public class SynchController {
 		}
 		this.fController.saveAs(this.sddesc);
 	}
-	
-	public static Object[] getRow(JTable jt, int row) {
-		ArrayList<Object> oblist = new ArrayList<Object>();
-		for(int i = 0; i < jt.getColumnCount(); i++) {
-			Object obj = jt.getValueAt(row, i);
-			if(obj != null) obj = obj.toString();
-			oblist.add(obj);
-		}
-		return oblist.toArray();
-	}
-	
-	public static int getSelectedIndeces(JTable jt) throws MyAppException{
-		int[] selected = jt.getSelectedRows();
-		if(selected.length == 0) throw new MyAppException("No rows selected!");
-		if(selected.length > 1) throw new MyAppException("Too many rows selected!");
-		return selected[0];
-	}
-	
+		
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
-	}
-	
-	private String charsToString(char[] chs) {
-		if(chs == null) return null;
-		if(chs.length == 0) return null;
-		StringBuilder strb = new StringBuilder();
-		for(char c : chs) {
-			strb.append(c);
-		}
-		return strb.toString();
 	}
 	
 	public SynchOption getsOpt() {

@@ -1,8 +1,11 @@
 package main;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 import javax.swing.JTable;
+
+import utilities.MyAppException;
 
 public class GeneralController {
 
@@ -20,4 +23,32 @@ public class GeneralController {
 			else jt.getColumnModel().getColumn(i).setPreferredWidth(50);
 		}
 	}
+	
+	public static int getSelectedIndeces(JTable jt) throws MyAppException{
+		int[] selected = jt.getSelectedRows();
+		if(selected.length == 0) throw new MyAppException("No rows selected!");
+		if(selected.length > 1) throw new MyAppException("Too many rows selected!");
+		return selected[0];
+	}
+	
+	public static String charsToString(char[] chs) {
+		if(chs == null) return null;
+		if(chs.length == 0) return null;
+		StringBuilder strb = new StringBuilder();
+		for(char c : chs) {
+			strb.append(c);
+		}
+		return strb.toString();
+	}
+	
+	public static Object[] getRow(JTable jt, int row) {
+		ArrayList<Object> oblist = new ArrayList<Object>();
+		for(int i = 0; i < jt.getColumnCount(); i++) {
+			Object obj = jt.getValueAt(row, i);
+			if(obj != null) obj = obj.toString();
+			oblist.add(obj);
+		}
+		return oblist.toArray();
+	}
+	
 }

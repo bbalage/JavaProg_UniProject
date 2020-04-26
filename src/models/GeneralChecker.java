@@ -80,6 +80,9 @@ public class GeneralChecker {
 		return ret;
 	}
 	
+	public void checkIfConvertable(Object[] row, String[] types) throws MyAppException{
+		formatRow(row, types);
+	}
 	
 	public Timestamp convertToTimestamp(String text) throws MyAppException{
 		java.util.Date dt = null;
