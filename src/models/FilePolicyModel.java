@@ -41,9 +41,20 @@ public class FilePolicyModel {
 	private String[] columnnames;
 	private GeneralChecker gc = new GeneralChecker();
 	
-	private void startSaveSession() {
+	private void startSaveSession(SynchedDataDescriptor sddesc) {
 		this.targetFile = this.synchedFile;
 		this.saveMode = this.synchMode;
+		this.dataName = sddesc.getDataTypeName();
+		dataName = dataName != null ? dataName : "Untitled";
+		this.instancename = dataName+"instance";
+		this.areTypesSet = sddesc.areTypesSet();
+		if(this.areTypesSet) {
+			this.classnames = sddesc.getTypes(); 
+		}
+		else {
+			this.classnames = null;
+		}
+		this.columnnames = sddesc.getNames();
 	}
 	
 	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt, boolean overWrite) throws MyAppException, ParserConfigurationException, JSONException{
@@ -62,17 +73,6 @@ public class FilePolicyModel {
 		this.targetFile = new File(path);
 		if(!overWrite && this.targetFile.exists()) throw new MyAppException("Ez a fájl már létezik! A felülírás nem engedélyezett a mentés másként funkcióban.");
 		this.saveMode = opt;
-		this.dataName = sddesc.getDataTypeName();
-		dataName = dataName != null ? dataName : "Untitled";
-		this.instancename = dataName+"instance";
-		this.areTypesSet = sddesc.areTypesSet();
-		if(this.areTypesSet) {
-			this.classnames = sddesc.getTypes(); 
-		}
-		else {
-			this.classnames = null;
-		}
-		this.columnnames = sddesc.getNames();
 		switch(opt) {
 		case 0:
 			//CSV
@@ -87,14 +87,21 @@ public class FilePolicyModel {
 	}
 	
 	public void save(SynchedDataDescriptor sddesc) throws ParserConfigurationException, IOException, TransformerException, MyAppException, JSONException{
-		startSaveSession();
+		startSaveSession(sddesc);
 		switch(this.saveMode) {
 		case 1:
 			startSaveAsXml(sddesc);
-			for(Object[] row : sddesc.getData()) appendRow(row);
+			for(Object[] row : sddesc.getData()) appendRowXml(row);
 			finishSaveAsXml();
 			break;
-		
+		case 2:
+			startSaveAsJson(sddesc);
+			for(int i = 0; i < sddesc.getData().size(); i++) {
+				if(sddesc.getData().get(i) == null) System.out.println("Row is null at: " +i);
+				appendRowJson(sddesc.getData().get(i));
+			}
+			finishSaveAsJson();
+			break;
 		default:
 			throw new MyAppException("Save mode not supported.");
 		}

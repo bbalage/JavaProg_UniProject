@@ -68,6 +68,7 @@ public class FileController {
 	
 	public void endFileSession(){
 		this.flm.clearSaveSession(); //Some more specific cleaning code might be necessary.
+		this.sddesc = null;
 		this.mainView.getTableFieldNames().setModel(new NameTableModel());
 		this.mainView.getTableInput().setModel(new DefaultTableModel());
 		this.mainView.getTableOutput().setModel(new OutputTableModel());

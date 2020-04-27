@@ -155,7 +155,7 @@ public class SynchController {
 			}
 			break;
 		case XML:
-		//case JSON:
+		case JSON:
 			switch(type) {
 			case 0:	this.fController.insert(); break;
 			case 1:	this.fController.update(); break;
@@ -189,7 +189,7 @@ public class SynchController {
 			}
 			break;
 		case XML:
-		//case JSON:
+		case JSON:
 			fController.setupFileInterface();
 			break;
 		case NONE:
@@ -205,8 +205,9 @@ public class SynchController {
 			this.dbController.endDBSession();
 			break;
 		case XML:
-		//case JSON:
+		case JSON:
 			this.fController.endFileSession();
+			this.sddesc = null;
 			break;
 		case NONE:
 			sendMessage("No synch was active.", JOptionPane.INFORMATION_MESSAGE);
