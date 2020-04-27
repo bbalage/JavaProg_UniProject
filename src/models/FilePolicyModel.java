@@ -179,12 +179,7 @@ public class FilePolicyModel {
 	
 	private void finishSaveAsJson() throws JSONException, IOException{
 		this.jRoot.put(this.dataName, this.jArray);
-		//Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		//org.json.simple.JSONObject simpJson = 
-		//String json = gson.toJson(this.jRoot.toJSONString());
 		PrintStream toJsonFile = new PrintStream(new FileOutputStream(this.targetFile));
-		//String[] jsonSplit = json.split("\n");
-		//for(String out : jsonSplit)
 		toJsonFile.println(jRoot.toString(2));
 		toJsonFile.close();
 	}
@@ -251,7 +246,7 @@ public class FilePolicyModel {
 	}
 	
 	//Read Json.
-	private SynchedDataDescriptor readJson(File source) throws IOException, JSONException{
+	private SynchedDataDescriptor readJson(File source) throws IOException, JSONException, MyAppException{
 		StringBuilder jsonData = new StringBuilder();
 		LineNumberReader in = new LineNumberReader(new InputStreamReader(new FileInputStream(source)));
 		String inline;
@@ -259,11 +254,38 @@ public class FilePolicyModel {
 			jsonData.append(inline);
 		in.close();
 		JSONObject jRoot = new JSONObject(jsonData.toString());
-		JSONArray jRootData = jRoot.getJSONArray("TARSASHAZ");
-		//String[] types = getTypesFromJson(jRootData);
-		//if(types != null) for(String ts : types) System.out.println(ts);
-		//else System.out.println("Types was null.");
-		return null;
+		JSONArray jRootName= jRoot.names();
+		if(jRootName.length() != 1) throw new MyAppException("Filestructure not resembling table structure.");
+		JSONArray jRootArray = jRoot.getJSONArray(jRootName.getString(0));
+		String dataName = jRootName.getString(0);
+		System.out.println(dataName);
+		String[] types = getTypesFromJson(jRootArray);
+		boolean typesSet;
+		if(types != null) {
+			for(String ts : types) System.out.println(ts);
+			typesSet = true;
+		}
+		else {
+			System.out.println("Types was null.");
+			typesSet = false;
+		}
+		if(typesSet) {
+			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
+		}
+		String[] names = getNamesFromJson(jRootArray, typesSet);
+		for(String ns : names) System.out.println(ns);
+		ArrayList<Object[]> values = new ArrayList<Object[]>();
+		for(int i = typesSet ? 1 : 0; i < jRootArray.length(); i++) {
+			values.add(getValuesFromJsonAt(jRootArray, names, i));
+		}
+		for(Object[] row : values) {
+			for(Object field : row) System.out.print(field+" - ");
+			System.out.println();
+		}
+		SynchedDataDescriptor sddesc = null;
+		if(typesSet) sddesc = new SynchedDataDescriptor(dataName, types, names, typesSet, values);
+		else sddesc = new SynchedDataDescriptor(dataName, null, names, typesSet, values);
+		return sddesc;
 	}
 	
 	private SynchedDataDescriptor readXml(File source) throws ParserConfigurationException, IOException, SAXException, MyAppException{
@@ -305,11 +327,53 @@ public class FilePolicyModel {
 		return sddesc;
 	}
 	
-	private String[] getTypesFromJson(JSONObject jRoot) {
+	private String[] getValuesFromJsonAt(JSONArray jRootArray, String[] names, int index) throws MyAppException{
+		ArrayList<String> values = new ArrayList<String>();
+		try {
+			JSONObject jRowObj = jRootArray.getJSONObject(index);
+			JSONArray jValNames = jRowObj.names();
+			if(jValNames.length() != 1) throw new MyAppException("Incompatible file structure detected at getValuesFromJsonAt.");
+			JSONArray jFields = jRowObj.getJSONArray(jValNames.getString(0));
+			for(int i = 0; i < jFields.length(); i++) {
+				JSONObject jField = jFields.getJSONObject(i);
+				values.add(jField.getString(names[i]));
+			}
+		}
+		catch(JSONException exc) {
+			throw new MyAppException("Could not get values back: "+exc.getMessage());
+		}
+		return values.toArray(new String[0]);
+	}
+	
+	private String[] getNamesFromJson(JSONArray jRootArray, boolean typesSet) throws MyAppException {
+		ArrayList<String> names = new ArrayList<String>();
+		int index = typesSet ? 1 : 0;
+		try {
+			JSONObject jValObj = jRootArray.getJSONObject(index);
+			JSONArray jValNames = jValObj.names();
+			if(jValNames.length() != 1) throw new MyAppException("Incompatible file structure detected at getNamesFromJson.");
+			JSONArray jVals = jValObj.getJSONArray(jValNames.getString(0));
+			for(int i = 0; i < jVals.length(); i++) {
+				JSONObject jObj = jVals.getJSONObject(i);
+				JSONArray jArr = jObj.names();
+				if(jArr.length() != 1) throw new MyAppException("Incompatible file structure detected at getNamesFromJson, inside loop.");
+				String name = jArr.getString(0);
+				if(name.length() == 0) throw new MyAppException("Name's length was 0!");
+				names.add(name);
+			}
+		}
+		catch(JSONException exc) {
+			throw new MyAppException("Could not get names back: "+exc.getMessage());
+		}
+		return names.toArray(new String[0]);
+	}
+	
+	private String[] getTypesFromJson(JSONArray jRootArray) {
 		ArrayList<String> types = new ArrayList<String>();
 		try {
-			JSONArray jTypes = jRoot.getJSONArray("mytypes");
+			JSONObject jTypeObj = jRootArray.getJSONObject(0);
 			System.out.println("Got mytypes.");
+			JSONArray jTypes = jTypeObj.getJSONArray("mytypes");
 			for(int i = 0; i < jTypes.length(); i++) {
 				JSONObject jObj = jTypes.getJSONObject(i);
 				String temptype = jObj.getString("mytype");
