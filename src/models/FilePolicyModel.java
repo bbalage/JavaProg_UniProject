@@ -9,7 +9,6 @@ import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
 import javax.xml.transform.dom.*;
@@ -40,9 +39,7 @@ public class FilePolicyModel {
 	private String[] columnnames;
 	private GeneralChecker gc = new GeneralChecker();
 	
-	private void startSaveSession(SynchedDataDescriptor sddesc) {
-		this.targetFile = this.synchedFile;
-		this.saveMode = this.synchMode;
+	private void initLocalSaveSessionData(SynchedDataDescriptor sddesc) {
 		this.dataName = sddesc.getDataTypeName();
 		dataName = dataName != null ? dataName : "Untitled";
 		this.instancename = dataName+"instance";
@@ -54,6 +51,12 @@ public class FilePolicyModel {
 			this.classnames = null;
 		}
 		this.columnnames = sddesc.getNames();
+	}
+	
+	private void startSaveSession(SynchedDataDescriptor sddesc) {
+		this.targetFile = this.synchedFile;
+		this.saveMode = this.synchMode;
+		initLocalSaveSessionData(sddesc);
 	}
 	
 	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt, boolean overWrite) throws MyAppException, ParserConfigurationException, JSONException{
@@ -72,6 +75,7 @@ public class FilePolicyModel {
 		this.targetFile = new File(path);
 		if(!overWrite && this.targetFile.exists()) throw new MyAppException("Ez a fájl már létezik! A felülírás nem engedélyezett a mentés másként funkcióban.");
 		this.saveMode = opt;
+		initLocalSaveSessionData(sddesc);
 		switch(opt) {
 		case 0:
 			//CSV
