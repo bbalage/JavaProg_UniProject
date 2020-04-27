@@ -52,6 +52,10 @@ public class FileController {
 			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
+		catch(JSONException exc) {
+			sendMessage("Sikertelen olvasás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			return null;
+		}
 		this.sddesc = sddesc;
 		return sddesc;
 	}

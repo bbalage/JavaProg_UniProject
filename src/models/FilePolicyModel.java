@@ -1,8 +1,11 @@
 package models;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
@@ -97,9 +100,9 @@ public class FilePolicyModel {
 		}
 	}
 	
-	public void saveAsCsv() {
+	/*public void saveAsCsv() {
 		
-	}
+	}*/
 	
 	private void startSaveAsJson(SynchedDataDescriptor sddesc) throws JSONException{
 		this.jRoot = new JSONObject();
@@ -176,11 +179,13 @@ public class FilePolicyModel {
 	
 	private void finishSaveAsJson() throws JSONException, IOException{
 		this.jRoot.put(this.dataName, this.jArray);
-		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String json = gson.toJson(this.jRoot);
+		//Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		//org.json.simple.JSONObject simpJson = 
+		//String json = gson.toJson(this.jRoot.toJSONString());
 		PrintStream toJsonFile = new PrintStream(new FileOutputStream(this.targetFile));
-		String[] jsonSplit = json.split("\n");
-		for(String out : jsonSplit) toJsonFile.println(out);
+		//String[] jsonSplit = json.split("\n");
+		//for(String out : jsonSplit)
+		toJsonFile.println(jRoot.toString(2));
 		toJsonFile.close();
 	}
 	
@@ -211,13 +216,14 @@ public class FilePolicyModel {
 		this.instancename = null;
 	}
 	
-	public SynchedDataDescriptor readFromFile(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException{
+	public SynchedDataDescriptor readFromFile(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException, JSONException{
 		if(source.isDirectory()) throw new MyAppException("Chosen file was a directory!");
 		String fileName = source.getName();
 		String appendix;
 		switch(opt) {
 		case 0: appendix = ".csv"; break;
 		case 1: appendix = ".xml"; break;
+		case 2: appendix = ".json"; break;
 		default:
 			throw new MyAppException("Nem támogatott fájl mentési opció a mentés másként funkcióban.");
 		}
@@ -233,6 +239,9 @@ public class FilePolicyModel {
 		case 1:
 			sddesc = readXml(source);
 			break;
+		case 2:
+			sddesc = readJson(source);
+			break;
 		default:
 			throw new MyAppException("Unsupported option for read session.");
 		}
@@ -241,7 +250,23 @@ public class FilePolicyModel {
 		return sddesc;
 	}
 	
-	public SynchedDataDescriptor readXml(File source) throws ParserConfigurationException, IOException, SAXException, MyAppException{
+	//Read Json.
+	private SynchedDataDescriptor readJson(File source) throws IOException, JSONException{
+		StringBuilder jsonData = new StringBuilder();
+		LineNumberReader in = new LineNumberReader(new InputStreamReader(new FileInputStream(source)));
+		String inline;
+		while((inline = in.readLine()) != null)
+			jsonData.append(inline);
+		in.close();
+		JSONObject jRoot = new JSONObject(jsonData.toString());
+		JSONArray jRootData = jRoot.getJSONArray("TARSASHAZ");
+		//String[] types = getTypesFromJson(jRootData);
+		//if(types != null) for(String ts : types) System.out.println(ts);
+		//else System.out.println("Types was null.");
+		return null;
+	}
+	
+	private SynchedDataDescriptor readXml(File source) throws ParserConfigurationException, IOException, SAXException, MyAppException{
 		DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document dom  = db.parse(source);
 		NodeList nodeList = dom.getChildNodes();
@@ -278,6 +303,24 @@ public class FilePolicyModel {
 		if(typesSet) sddesc = new SynchedDataDescriptor(dataTypeName, types, names, typesSet, values);
 		else sddesc = new SynchedDataDescriptor(dataTypeName, null, names, typesSet, values);
 		return sddesc;
+	}
+	
+	private String[] getTypesFromJson(JSONObject jRoot) {
+		ArrayList<String> types = new ArrayList<String>();
+		try {
+			JSONArray jTypes = jRoot.getJSONArray("mytypes");
+			System.out.println("Got mytypes.");
+			for(int i = 0; i < jTypes.length(); i++) {
+				JSONObject jObj = jTypes.getJSONObject(i);
+				String temptype = jObj.getString("mytype");
+				if(temptype.length() == 0) return null;
+				types.add(temptype);
+			}
+		}
+		catch(JSONException exc) {
+			return null;
+		}
+		return types.toArray(new String[0]);
 	}
 	
 	private String[] getValuesFromXml(NodeList fieldNodes, int fields) throws MyAppException{
