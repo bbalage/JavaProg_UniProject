@@ -38,6 +38,7 @@ public class SynchController {
 		case XML:
 		case JSON:
 		case CSV:
+		case DAT:
 			synchWitLocalFile(sOpt);
 			break;
 		case NONE:
@@ -136,6 +137,7 @@ public class SynchController {
 		case XML:
 		case JSON:
 		case CSV:
+		case DAT:
 			switch(type) {
 			case 0:	this.fController.insert(); break;
 			case 1:	this.fController.update(); break;
@@ -170,6 +172,7 @@ public class SynchController {
 		case XML:
 		case JSON:
 		case CSV:
+		case DAT:
 			fController.setupFileInterface();
 			break;
 		case NONE:
@@ -187,6 +190,7 @@ public class SynchController {
 		case XML:
 		case JSON:
 		case CSV:
+		case DAT:
 			this.fController.endFileSession();
 			this.sddesc = null;
 			break;

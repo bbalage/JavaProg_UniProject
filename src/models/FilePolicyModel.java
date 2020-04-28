@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -266,7 +267,7 @@ public class FilePolicyModel {
 		this.instancename = null;
 	}
 	
-	public SynchedDataDescriptor readFromFile(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException, JSONException{
+	public SynchedDataDescriptor readFromFile(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException, JSONException, ClassNotFoundException{
 		if(source.isDirectory()) throw new MyAppException("Választott fájl jegyzék volt!");
 		String fileName = source.getName();
 		String appendix;
@@ -274,6 +275,7 @@ public class FilePolicyModel {
 		case 0: appendix = ".csv"; break;
 		case 1: appendix = ".xml"; break;
 		case 2: appendix = ".json"; break;
+		case 3: appendix = ".dat"; break;
 		default:
 			throw new MyAppException("Nem támogatott fájl mentési opció a mentés másként funkcióban.");
 		}
@@ -283,20 +285,29 @@ public class FilePolicyModel {
 		else throw new MyAppException("Fájl kiterjesztése nem " + appendix);
 		SynchedDataDescriptor sddesc = null;
 		switch(opt) {
-		case 0:
-			sddesc = readCsv(source);
-			break;
-		case 1:
-			sddesc = readXml(source);
-			break;
-		case 2:
-			sddesc = readJson(source);
-			break;
+		case 0:	sddesc = readCsv(source); break;
+		case 1:	sddesc = readXml(source); break;
+		case 2:	sddesc = readJson(source); break;
+		case 3:	sddesc = readDat(source); break;
 		default:
 			throw new MyAppException("Unsupported option for read session. Revise program!");
 		}
 		this.synchMode = opt;
 		this.synchedFile = source;
+		return sddesc;
+	}
+	
+	private SynchedDataDescriptor readDat(File source) throws IOException, MyAppException, ClassNotFoundException{
+		ObjectInputStream in = new ObjectInputStream(new FileInputStream(source));
+		SynchedDataDescriptor sddesc = null;
+		try {
+			sddesc = (SynchedDataDescriptor) in.readObject();
+		}
+		catch(ClassCastException exc) {
+			in.close();
+			throw new MyAppException("Retrieved class was not SynchedDataDescriptor: "+exc.getMessage());
+		}
+		in.close();
 		return sddesc;
 	}
 	

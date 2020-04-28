@@ -48,15 +48,18 @@ public class SynchPoll extends JDialog {
 		rdbtnCsv.setBounds(20, 140, 149, 23);
 		contentPanel.add(rdbtnCsv);
 		
+		JRadioButton rdbtnDat = new JRadioButton("Lokális dat fájl");
+		rdbtnDat.setBounds(20, 170, 149, 23);
+		contentPanel.add(rdbtnDat);
+		
 		ButtonGroup rdbtnGroup = new ButtonGroup();
 		rdbtnGroup.add(rdbtnOracle);
 		rdbtnGroup.add(rdbtnSQLite);
 		rdbtnGroup.add(rdbtnXml);
 		rdbtnGroup.add(rdbtnJson);
 		rdbtnGroup.add(rdbtnCsv);
+		rdbtnGroup.add(rdbtnDat);
 		rdbtnOracle.setSelected(true);
-		
-		
 		{
 			JPanel buttonPane = new JPanel();
 			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -70,6 +73,7 @@ public class SynchPoll extends JDialog {
 						else if (rdbtnXml.isSelected()) synchController.synchWithType(SynchOption.XML);
 						else if(rdbtnJson.isSelected()) synchController.synchWithType(SynchOption.JSON);
 						else if(rdbtnCsv.isSelected()) synchController.synchWithType(SynchOption.CSV);
+						else if(rdbtnDat.isSelected()) synchController.synchWithType(SynchOption.DAT);
 					}
 				});
 				okButton.setActionCommand("OK");
