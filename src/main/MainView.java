@@ -6,6 +6,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import java.awt.CardLayout;
+
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
@@ -75,7 +77,7 @@ public class MainView extends JFrame {
 				synchController.startSynchSession();
 			}
 		});
-		btnSynchronize.setBounds(700, 300, 144, 25);
+		btnSynchronize.setBounds(50, 660, 150, 25);
 		homePanel.add(btnSynchronize);
 		
 		JLabel lblAMunkaMegkezdshez = new JLabel("A munka megkezdéséhez kérjük kattintson a szinkronizálás gombra!");
@@ -83,6 +85,28 @@ public class MainView extends JFrame {
 		lblAMunkaMegkezdshez.setBounds(20, 26, 967, 95);
 		homePanel.add(lblAMunkaMegkezdshez);
 		
+		
+		String dir = System.getProperty("user.dir");
+		String sep = System.getProperty("file.separator");
+		JLabel lblImage = new JLabel();
+		lblImage.setIcon(new ImageIcon(dir+sep+"files"+sep+"smiley.jpeg"));
+		lblImage.setBounds(50, 400, 250, 250);
+		homePanel.add(lblImage);
+
+		JLabel lblImage2 = new JLabel();
+		lblImage2.setBounds(650, 400, 250, 250);
+		homePanel.add(lblImage2);
+		lblImage2.setIcon(new ImageIcon(dir+sep+"files"+sep+"sadsmiley.png"));
+		
+		JButton btnKilps = new JButton("Kilépés");
+		btnKilps.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+			}
+		});
+		btnKilps.setBounds(650, 660, 117, 25);
+		homePanel.add(btnKilps);
+
 		JPanel tablePanel = new JPanel();
 		cardPanel.add(tablePanel, "tablePanel");
 		tablePanel.setLayout(null);
