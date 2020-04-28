@@ -16,6 +16,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
+import java.awt.Font;
 
 public class MainView extends JFrame {
 
@@ -68,13 +69,19 @@ public class MainView extends JFrame {
 		homePanel.setLayout(null);
 		
 		JButton btnSynchronize = new JButton("Szinkronizálás");
+		btnSynchronize.setFont(new Font("Dialog", Font.BOLD, 13));
 		btnSynchronize.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				synchController.startSynchSession();
 			}
 		});
-		btnSynchronize.setBounds(36, 136, 144, 25);
+		btnSynchronize.setBounds(700, 300, 144, 25);
 		homePanel.add(btnSynchronize);
+		
+		JLabel lblAMunkaMegkezdshez = new JLabel("A munka megkezdéséhez kérjük kattintson a szinkronizálás gombra!");
+		lblAMunkaMegkezdshez.setFont(new Font("Dialog", Font.BOLD, 13));
+		lblAMunkaMegkezdshez.setBounds(20, 26, 967, 95);
+		homePanel.add(lblAMunkaMegkezdshez);
 		
 		JPanel tablePanel = new JPanel();
 		cardPanel.add(tablePanel, "tablePanel");
@@ -184,6 +191,11 @@ public class MainView extends JFrame {
 		tablePanel.add(btnSaveAs);
 		
 		JButton btnHelp = new JButton("Help");
+		btnHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.fetchHelp(MainView.this, 1);
+			}
+		});
 		btnHelp.setBounds(891, 678, 117, 25);
 		tablePanel.add(btnHelp);
 		

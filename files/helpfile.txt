@@ -1,0 +1,9 @@
+::Oracle_login::
+Oracle help szöveg
+Folytatás
+::Database_help::
+Database help szöveg
+Vége
+::File_help::
+Fájl help szöveg
+Sok szöveg

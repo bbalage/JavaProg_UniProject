@@ -1,5 +1,6 @@
 package main;
 
+import java.awt.Window;
 import java.io.File;
 import java.sql.SQLException;
 
@@ -18,6 +19,7 @@ public class SynchController {
 	private DatabaseController dbController;
 	private FileController fController;
 	private SynchedDataDescriptor sddesc;
+	private HelpController hc = new HelpController();
 	
 	SynchController(MainView mv){
 		this.dbController = new DatabaseController(mv);
@@ -226,6 +228,17 @@ public class SynchController {
 		this.fController.saveAs(this.sddesc);
 	}
 		
+	public void fetchHelp(Window caller, int mode) {
+		HelpOptions ho = null;
+		if(mode == 0) ho = HelpOptions.ORACLE_LOGIN;
+		else if(mode == 1) ho = this.sOpt == SynchOption.ORACLE || this.sOpt == SynchOption.SQLITE ? HelpOptions.DATABASE_HELP : HelpOptions.FILE_HELP;
+		else {
+			sendMessage("Nem található ilyen segítség!", JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+		hc.getHelpWindow(caller, ho);
+	}
+	
 	public void sendMessage(String msg, int opt) {
 		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
 	}

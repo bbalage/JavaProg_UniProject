@@ -94,6 +94,11 @@ public class LoginView extends JDialog {
 		getContentPane().add(checkBoxDefaultServer);
 		
 		btnHelp = new JButton("Help");
+		btnHelp.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.fetchHelp(LoginView.this, 0);
+			}
+		});
 		btnHelp.setBounds(266, 383, 117, 25);
 		getContentPane().add(btnHelp);
 		
