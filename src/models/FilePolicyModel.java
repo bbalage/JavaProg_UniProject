@@ -62,7 +62,7 @@ public class FilePolicyModel {
 	public void startSaveSession(SynchedDataDescriptor sddesc, File targetDir, String targetName, int opt, boolean overWrite) throws MyAppException, ParserConfigurationException, JSONException{
 		String appendix;
 		switch(opt) {
-		case 0: appendix = ".csv"; break;
+		//case 0: appendix = ".csv"; break;
 		case 1: appendix = ".xml"; break;
 		case 2: appendix = ".json"; break;
 		default:
@@ -141,9 +141,9 @@ public class FilePolicyModel {
 	
 	public void appendRow(Object[] row) throws JSONException{
 		switch(this.saveMode) {
-		case 0:
+		//case 0:
 			//CSV
-			break;
+			//break;
 		case 1:
 			appendRowXml(row);
 			break;
@@ -201,9 +201,9 @@ public class FilePolicyModel {
 	
 	public void finishSave() throws ParserConfigurationException, IOException, TransformerException, MyAppException, JSONException{
 		switch(this.saveMode) {
-		case 0:
+		//case 0:
 			
-			break;
+			//break;
 		case 1:
 			finishSaveAsXml();
 			break;
@@ -230,7 +230,7 @@ public class FilePolicyModel {
 		String fileName = source.getName();
 		String appendix;
 		switch(opt) {
-		case 0: appendix = ".csv"; break;
+		//case 0: appendix = ".csv"; break;
 		case 1: appendix = ".xml"; break;
 		case 2: appendix = ".json"; break;
 		default:
@@ -242,9 +242,9 @@ public class FilePolicyModel {
 		else throw new MyAppException("File does not have " + appendix + "extension.");
 		SynchedDataDescriptor sddesc = null;
 		switch(opt) {
-		case 0:
+		//case 0:
 			//CSV
-			break;
+			//break;
 		case 1:
 			sddesc = readXml(source);
 			break;
