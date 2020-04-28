@@ -36,13 +36,9 @@ public class SynchController {
 			synchWithSQLite();
 			break;
 		case XML:
-			synchWithXml();
-			break;
 		case JSON:
-			synchWithJson();
-			break;
 		case CSV:
-			synchWithCsv();
+			synchWitLocalFile(sOpt);
 			break;
 		case NONE:
 			sendMessage("Miscarried functioning! Synchoption was NONE! Revise program! syncWithType", JOptionPane.ERROR_MESSAGE);
@@ -64,49 +60,17 @@ public class SynchController {
 		this.lView.dispose();
 	}
 	
-	private void synchWithCsv() {
+	private void synchWitLocalFile(SynchOption sOpt) {
 		JFileChooser jfc = new JFileChooser();
-		jfc.setDialogTitle("Válassza ki a csv fájlt, amivel szinkronizálni szeretne!");
+		jfc.setDialogTitle("Válassza ki a " + sOpt.getFilename() + " fájlt, amivel szinkronizálni szeretne!");
 		int ret = jfc.showOpenDialog(this.sPoll);
 		if(ret == JFileChooser.APPROVE_OPTION) {
-			File csvFile = jfc.getSelectedFile();
-			this.sddesc = this.fController.loadFile(csvFile, 0);
+			File file = jfc.getSelectedFile();
+			this.sddesc = this.fController.loadFile(file, sOpt.getFilePolicyOpt());
 		}
 		if(this.sddesc != null) {
-			sendMessage("Sikeres kapcsolódás a csv fájllal.", JOptionPane.INFORMATION_MESSAGE);
-			this.sOpt = SynchOption.CSV;
-			this.sPoll.dispose();
-			loadSynchedSession();
-		}
-	}
-	
-	private void synchWithJson() {
-		JFileChooser jfc = new JFileChooser();
-		jfc.setDialogTitle("Válassza ki a json fájlt, amivel szinkronizálni szeretne!");
-		int ret = jfc.showOpenDialog(this.sPoll);
-		if(ret == JFileChooser.APPROVE_OPTION) {
-			File jsonFile = jfc.getSelectedFile();
-			this.sddesc = this.fController.loadFile(jsonFile, 2);
-		}
-		if(this.sddesc != null) {
-			sendMessage("Sikeres kapcsolódás a json fájllal.", JOptionPane.INFORMATION_MESSAGE);
-			this.sOpt = SynchOption.JSON;
-			this.sPoll.dispose();
-			loadSynchedSession();
-		}
-	}
-	
-	private void synchWithXml() {
-		JFileChooser jfc = new JFileChooser();
-		jfc.setDialogTitle("Válassza ki az xml fájlt, amivel szinkronizálni szeretne!");
-		int ret = jfc.showOpenDialog(this.sPoll);
-		if(ret == JFileChooser.APPROVE_OPTION) {
-			File xmlFile = jfc.getSelectedFile();
-			this.sddesc = this.fController.loadFile(xmlFile, 1);
-		}
-		if(this.sddesc != null) {
-			sendMessage("Sikeres kapcsolódás az xml fájllal.", JOptionPane.INFORMATION_MESSAGE);
-			this.sOpt = SynchOption.XML;
+			sendMessage("Sikeres kapcsolódás a " + sOpt.getFilename() +" fájllal.", JOptionPane.INFORMATION_MESSAGE);
+			this.sOpt = sOpt;
 			this.sPoll.dispose();
 			loadSynchedSession();
 		}
