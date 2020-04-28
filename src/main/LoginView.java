@@ -59,7 +59,7 @@ public class LoginView extends JDialog {
 		getContentPane().add(textUsername);
 		textUsername.setColumns(10);
 		
-		JLabel lblUrl = new JLabel("Adatbázis azonosító (URL és leírók):");
+		JLabel lblUrl = new JLabel("URL:");
 		lblUrl.setBounds(41, 10, 279, 15);
 		getContentPane().add(lblUrl);
 		

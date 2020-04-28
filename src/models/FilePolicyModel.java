@@ -237,7 +237,7 @@ public class FilePolicyModel {
 			throw new MyAppException("Nem támogatott fájl mentési opció a mentés másként funkcióban.");
 		}
 		if(fileName.length() > appendix.length()) {
-			if(!fileName.substring(fileName.length()-appendix.length(), fileName.length()).equals(appendix)) throw new MyAppException("File does not have xml extension.");
+			if(!fileName.substring(fileName.length()-appendix.length(), fileName.length()).equals(appendix)) throw new MyAppException("A fájl kiterjesztése nem "+appendix);
 		}
 		else throw new MyAppException("Fájl kiterjesztése nem " + appendix);
 		SynchedDataDescriptor sddesc = null;
@@ -342,7 +342,7 @@ public class FilePolicyModel {
 			}
 		}
 		catch(JSONException exc) {
-			throw new MyAppException("Could not get values back: "+exc.getMessage());
+			throw new MyAppException("Nem sikerült visszakapni az értékeket: "+exc.getMessage());
 		}
 		return values.toArray(new String[0]);
 	}

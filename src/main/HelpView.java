@@ -49,6 +49,7 @@ public class HelpView extends JDialog {
 		getContentPane().add(scrollPane);
 		
 		textManual = new JTextArea();
+		textManual.setEditable(false);
 		textManual.setFont(new Font("Dialog", Font.BOLD, 13));
 		scrollPane.setViewportView(textManual);
 		

@@ -25,6 +25,7 @@ public class HelpController {
 		try {
 			String helpText = hm.fetchHelpText(ho);
 			hv.getTextManual().setText(helpText);
+			hv.getTextManual().setCaretPosition(0);
 			hv.setVisible(true);
 		}
 		catch(MyAppException exc) {
