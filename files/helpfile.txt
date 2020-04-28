@@ -1,9 +1,222 @@
 ::Oracle_login::
-Oracle help szöveg
-Folytatás
+Az úgynevezett login ablakon van lehetősége
+bejelentkezni egy online oracle adatbázisra.
+
+A bejelentkezéshez egy URL, egy fehasználónév,
+egy workspace azonosító és egy jelszó szükséges.
+
+Az URL az Oracle szerver IP címe, portja és típusa
+a következő formátumban:
+iii.iii.iii.iii:pppp:xx
+Itt i az IP cím, p a port, xx pedig a típus.
+A default, tesztelt kapcsolat például a következő
+URL segítségével áll fel:
+193.6.5.58:1521:XE
+Az URL kezelése úgy történik, hogy a beírt adatot
+hozzáfűzzük egy már meglévő leíróhoz, névleg a
+jdbc:oracle:thin:@
+szöveghez.
+Ez a funkciója az alkalmazásnak ilyen típusú Oracle
+rendszerre lett tesztelve, és ilyenre használható.
+
+A felhasználónév az a név, amivel az adatbázisára
+be tud jelentkezni.
+
+A workspace azonosító az a kulcs, amit utána az
+alkalmazás arra használ, hogy táblákat keressen.
+Az adott workspace alatt lesznek a táblák
+megkeresve az adatbázisban.
+
+A jelszó az adatbázishoz szóló jelszava.
+
+Amennyiben a default szervert akarja használni,
+tehát a
+193.6.5.58:1521:XE
+URL-űt, akkor nyomjon rá az URL beviteli mező
+alatt található checkboxra. Így az alkalmazás
+ebbe próbál bejelentkezni.
+
+Amennyiben a felhasználóneve, és a használni
+kívánt workspace azonosítója egyezik, nyomjon
+rá a workspace alatti checkboxra.
+
+A checkboxok használatával időt spórolhat, ha a
+default működést szeretné választani.
 ::Database_help::
-Database help szöveg
-Vége
+Az adatbáziskezeléskor elérhető az úgynevezett
+adatbázispanel az ablak bal felső/középső részén.
+
+Ennek a panelnak a tartozékai egy legördülő lista,
+egy betöltés gomb és egy táblázat.
+
+A legördülő lista tartalmazza mindazoknak a
+tábláknak a neveit, amelyeket az adatbázis megadott
+workspace-ében találtunk az ön számára.
+A workspace-t a login ablakban tudta megadni.
+Ahhoz, hogy a kezelés műveleteit el tudja kezdeni,
+előbb válasszon egy táblát a legördülő listából.
+(A legelső tábla automatikusan ki van választva,
+de ez ne tartsa vissza önt a lista használatától.
+Kedve szerint válogathat a talált táblák közt.)
+
+Amikor egy tábla ki van választva, akkor az
+adatbázis panelen lévő másik táblázat
+(ez a táblázat fönt helyezkedik el az ablakon,
+nagyjából középen) mutatja, milyen mezők találhatók
+benne, és azt is, hogy ezek milyen típusúak.
+Ez egyfajta előnézett, más funkciója nincs.
+
+A betöltés gombbal tudja a kiválasztott tábla
+tartalmát behozni az alsó táblázatokba. A
+betöltés gomb lenyomása után megkezdheti az
+adatkezelési műveleteket.
+
+Az adatkezelési műveleteket adatbázisnál azonnali
+szinkronizáció követi, tehát amint kiad egy
+parancsot, az a parancs továbbítódik is az
+adatbázisnak.
+
+A kiadható parancsok: adatfelvitel, adatmódosítás
+és adattörlés. (Tehát a DML parancsok)
+
+Felvitelhez használja a kis táblázatot középen.
+Ez a táblázat szerkezetileg ugyanaz, mint a nagy
+táblázat (amelyben a talált rekordokat jelenítjük
+meg), viszont pusztán egy üres sorral rendelkezik.
+Ebbe a sorba írja a felvinni kívánt rekordokat.
+Ha beírta, amit be szeretett volna, akkor nyomjon
+a "Felvisz" gombra. Egy üzenet értesíti, hogy
+a felvitel sikeres volt-e, és ha nem, milyen
+hibával bukott el.
+FONTOS: Ahova semmit nem ír, ott null értékek
+kerülnek felvitelre.
+
+Módosításhoz töltse ki hasonlóan a táblázatot,
+mint a felvitelnél. Ekkor ki kell jelölnie egy
+sort a kimeneti táblázatban, hogy a művelet
+végrehajtható legyen. Ha egy sort sem jelöl
+ki, vagy többet jelöl ki, akkor hibát fog kapni.
+Kijelöléshez egyszerűen kattintson a sorra.
+Mikor kész, nyomja meg a "Módosítás" gombot.
+FONTOS: Ahova nem ír semmit, ott null értékre
+próbálunk módosítani.
+Mivel ez egy alpha verzió, a módosítás funkció
+ezen része kényelmetlenséget okozhat, ám így
+tudjuk egyszerűen biztosítani a teljes
+funkcionalitást, tehát az értékek kinullázását.
+
+Törléshez jelöljön ki egy darab oszlopot a
+kimeneti táblázatban, aztán nyomjon a "Törlés"
+gombra!
+
+Ha szeretné lezárni a kapcsolatot az adatbázissal,
+akkor nyomja meg a "Kapcsolatot lezár" gombot!
+
+Ha szeretne lokális mentést végezni az
+a betöltött adatokra, akkor nyomja meg a
+"Mentés másként" gombot.
+Ekkor a táblázat tartalmát elmentjük egy lokális
+fájlba a számítógépén. A fájl helyét és nevét is
+van lehetősége megadni.
+Választhat a támogatott formátumok között is, amik
+jelenleg:
+.json; .xml
+FONTOS:
+Egy fájlba csak egy táblát tudunk menteni.
+
+Megjegyzés:
+Az adatbázis funkcionalitás lényegében nem
+változik Oracle vagy SQLite adatbázis esetén sem.
+Azonban SQLite-nál a Datetime vagy Timestamp
+formátumokat nem tudjuk kezelni.
+
+Az adatbázis korlátozásait, triggereit, egyéb
+műveleteit az alkalmazás nem feltétlenül látja.
+Amennyiben az adatbázis nem engedi elvégezni
+a műveletet, ön hibaüzenetet fog kapni róla,
+esetleg csak a végeredményt fogja másként látni.
 ::File_help::
-Fájl help szöveg
-Sok szöveg
+Fájlkezelésnél egy adott fájl tartalmát lehet
+megtekinteni és módosítani. Ez a fájl lehet
+json vagy xml fájl.
+
+Megjegyzés:
+A funkcionalitás ugyanaz json és xml fájl esetén is.
+
+FONTOS:
+Csak olyan .json vagy .xml kiterjesztésű fájlt
+tudunk kezelni, amelynek szerkezete megfelel egy
+darab tábla szerkezetének. (adatbázis tábla)
+Tehát érdemes olyan fájlt kezelni, amit előzőleg
+ezzel az alkalmazással mentettek le egy
+adatbázisról.
+
+A fájlon elvégezhetők az adatkezelési műveletek,
+vagyis a felvitel, módosítás és törlés.
+FONTOS:
+A művelet elvégzésekor a módosítások nem íródnak
+rögtön a fájlba. Ahhoz, hogy a módosítások fájlba
+íródjanak, meg kell nyomnia a "Mentés" gombot.
+
+Felvitelhez használja a kis táblázatot középen.
+Ez a táblázat szerkezetileg ugyanaz, mint a nagy
+táblázat (amelyben a talált rekordokat jelenítjük
+meg), viszont pusztán egy üres sorral rendelkezik.
+Ebbe a sorba írja a felvinni kívánt rekordokat.
+Ha beírta, amit be szeretett volna, akkor nyomjon
+a "Felvisz" gombra. Egy üzenet értesíti, hogy
+a felvitel sikeres volt-e, és ha nem, milyen
+hibával bukott el.
+FONTOS: Ahova semmit nem ír, ott null értékek
+kerülnek felvitelre.
+
+Módosításhoz töltse ki hasonlóan a táblázatot,
+mint a felvitelnél. Ekkor ki kell jelölnie egy
+sort a kimeneti táblázatban, hogy a művelet
+végrehajtható legyen. Ha egy sort sem jelöl
+ki, vagy többet jelöl ki, akkor hibát fog kapni.
+Kijelöléshez egyszerűen kattintson a sorra.
+Mikor kész, nyomja meg a "Módosítás" gombot.
+FONTOS: Ahova nem ír semmit, ott null értékre
+próbálunk módosítani.
+Mivel ez egy alpha verzió, a módosítás funkció
+ezen része kényelmetlenséget okozhat, ám így
+tudjuk egyszerűen biztosítani a teljes
+funkcionalitást, tehát az értékek kinullázását.
+
+Törléshez jelöljön ki egy darab oszlopot a
+kimeneti táblázatban, aztán nyomjon a "Törlés"
+gombra!
+
+Lehetősége van elmenteni a kezelt adatokat
+más néven vagy más kiterjesztéssel is.
+A támogatott mentési formátumok:
+.json; .xml
+Ehhez nyomja meg a "Mentés másként" gombot.
+
+FONTOS:
+Ha a mentés másként funkciót használja, azzal
+nem változtatja meg azt, hogy melyik fájlt kezeli.
+Az egyszerű mentés funkciója nem arra a fájlra
+fog vonatkozni innentől, amit máshogy elmentett,
+hanem továbbra is arra, amivel szinkronizált.
+
+FONTOS:
+Mentés másként műveletnél a memóriában
+(tehát az ön szemszögéből a táblázatban)
+lévő adatokat mentjük, és nem azt, ami már
+elmentődött az eredetileg kezelt fájlba.
+
+A formátumok ellenőrzésére akkor van lehetőség,
+ha a kezelt fájlban kezelhető információt
+találtunk arra, hogy az egyes oszlopok adatait
+milyen típusú adatoknak tekintsük.
+Ennélfogva, ha az xml fájlban nem volt
+megadva, hogy dátumról van szó, akkor
+az alkalmazásnak nincs lehetősége ellenőrizni,
+hogy valóban dátumot ad-e meg utána a felhasználó.
+Ha egy adatbázis tábla tartalmát menti el
+ennek az alkalmazásnak a segítségével, akkor
+a kapott fájljai típusosak lesznek, és
+az ellenőrzés a fájlként való kezelésnél is
+meg fog történni.
