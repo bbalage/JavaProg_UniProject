@@ -129,7 +129,6 @@ public class GeneralChecker {
 	
 	public boolean checkIfCanonicalNames(String[] names) {
 		for(int i = 0; i < names.length; i++) {
-			System.out.println(names[i]);
 			if(!(names[i].equals(String.class.getCanonicalName()) ||
 					names[i].equals(Integer.class.getCanonicalName()) ||
 					names[i].equals(java.util.Date.class.getCanonicalName()) ||
