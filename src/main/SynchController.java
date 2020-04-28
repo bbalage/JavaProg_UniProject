@@ -41,6 +41,9 @@ public class SynchController {
 		case JSON:
 			synchWithJson();
 			break;
+		case CSV:
+			synchWithCsv();
+			break;
 		case NONE:
 			sendMessage("Miscarried functioning! Synchoption was NONE! Revise program! syncWithType", JOptionPane.ERROR_MESSAGE);
 			break;
@@ -59,6 +62,22 @@ public class SynchController {
 	
 	public void cancelSynchWithOracle() {
 		this.lView.dispose();
+	}
+	
+	private void synchWithCsv() {
+		JFileChooser jfc = new JFileChooser();
+		jfc.setDialogTitle("Válassza ki a csv fájlt, amivel szinkronizálni szeretne!");
+		int ret = jfc.showOpenDialog(this.sPoll);
+		if(ret == JFileChooser.APPROVE_OPTION) {
+			File csvFile = jfc.getSelectedFile();
+			this.sddesc = this.fController.loadFile(csvFile, 0);
+		}
+		if(this.sddesc != null) {
+			sendMessage("Sikeres kapcsolódás a csv fájllal.", JOptionPane.INFORMATION_MESSAGE);
+			this.sOpt = SynchOption.CSV;
+			this.sPoll.dispose();
+			loadSynchedSession();
+		}
 	}
 	
 	private void synchWithJson() {
@@ -152,6 +171,7 @@ public class SynchController {
 			break;
 		case XML:
 		case JSON:
+		case CSV:
 			switch(type) {
 			case 0:	this.fController.insert(); break;
 			case 1:	this.fController.update(); break;
@@ -185,6 +205,7 @@ public class SynchController {
 			break;
 		case XML:
 		case JSON:
+		case CSV:
 			fController.setupFileInterface();
 			break;
 		case NONE:
@@ -201,6 +222,7 @@ public class SynchController {
 			break;
 		case XML:
 		case JSON:
+		case CSV:
 			this.fController.endFileSession();
 			this.sddesc = null;
 			break;

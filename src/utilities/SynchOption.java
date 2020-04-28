@@ -1,5 +1,5 @@
 package utilities;
 
 public enum SynchOption {
-		NONE, ORACLE, SQLITE, XML, JSON;
+		NONE, ORACLE, SQLITE, XML, JSON, CSV;
 }

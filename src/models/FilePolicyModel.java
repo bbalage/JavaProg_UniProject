@@ -255,7 +255,7 @@ public class FilePolicyModel {
 		String fileName = source.getName();
 		String appendix;
 		switch(opt) {
-		//case 0: appendix = ".csv"; break;
+		case 0: appendix = ".csv"; break;
 		case 1: appendix = ".xml"; break;
 		case 2: appendix = ".json"; break;
 		default:
@@ -267,9 +267,9 @@ public class FilePolicyModel {
 		else throw new MyAppException("Fájl kiterjesztése nem " + appendix);
 		SynchedDataDescriptor sddesc = null;
 		switch(opt) {
-		//case 0:
-			//CSV
-			//break;
+		case 0:
+			sddesc = readCsv(source);
+			break;
 		case 1:
 			sddesc = readXml(source);
 			break;
@@ -284,7 +284,49 @@ public class FilePolicyModel {
 		return sddesc;
 	}
 	
-	//Read Json.
+	private SynchedDataDescriptor readCsv(File source) throws IOException, MyAppException{
+		LineNumberReader in = new LineNumberReader(new InputStreamReader(new FileInputStream(source)));
+		String line = in.readLine();
+		if(line == null) {
+			in.close();
+			throw new MyAppException("Üres fájl!");
+		}
+		String[] types = null;
+		boolean typesSet = false;
+		if(line.equals("mytypes")) {
+			line = in.readLine();
+			if(line == null) {
+				in.close();
+				throw new MyAppException("Hiányos fájl!");
+			}
+			types = line.split(";");
+			typesSet = true;
+			if(!gc.checkIfCanonicalNames(types)) {
+				in.close();
+				throw new MyAppException("Fájlban lévő típusok nem a kezelhető kanonikus nevek!");
+			}
+		}
+		line = in.readLine();
+		if(line == null) {
+			in.close();
+			throw new MyAppException("Hiányos fájl!");
+		}
+		String[] names = line.split(";");
+		ArrayList<Object[]> values = new ArrayList<Object[]>();
+		while((line = in.readLine())!= null) {
+			Object[] temp = line.split(";");
+			for(int i = 0; i < temp.length; i++) {
+				temp[i] = temp[i].toString().length() == 0 ? null : temp[i];
+			}
+			values.add(temp);
+		}
+		in.close();
+		SynchedDataDescriptor sddesc = null;
+		if(typesSet) sddesc = new SynchedDataDescriptor(dataName, types, names, typesSet, values);
+		else sddesc = new SynchedDataDescriptor(dataName, null, names, typesSet, values);
+		return sddesc;
+	}
+	
 	private SynchedDataDescriptor readJson(File source) throws IOException, JSONException, MyAppException{
 		StringBuilder jsonData = new StringBuilder();
 		LineNumberReader in = new LineNumberReader(new InputStreamReader(new FileInputStream(source)));
