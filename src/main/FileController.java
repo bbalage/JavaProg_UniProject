@@ -166,7 +166,7 @@ public class FileController {
 		boolean empty = true;
 		for(Object obj : values) if(obj != null) {empty = false; break;}
 		if(empty) {
-			sendMessage("There was no input value!", JOptionPane.ERROR_MESSAGE);
+			sendMessage("Nem volt megadva bemeneti érték!", JOptionPane.ERROR_MESSAGE);
 			return null;
 		}
 		if(this.sddesc.areTypesSet()) {
@@ -174,7 +174,7 @@ public class FileController {
 				gc.checkIfConvertable(values, this.sddesc.getTypes());
 			}
 			catch(MyAppException exc) {
-				sendMessage("Could not convert: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+				sendMessage("Nem sikerült konvertálni: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 				return null;
 			}
 		}
@@ -198,7 +198,7 @@ public class FileController {
 			selected = GeneralController.getSelectedIndeces(ot);
 		}
 		catch(MyAppException exc) {
-			sendMessage("Update failed: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			sendMessage("Frissítés sikertelen: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		this.sddesc.getData().set(selected, values);
@@ -206,7 +206,7 @@ public class FileController {
 		for(int i = 0; i < values.length; i++) {
 			otm.setValueAt(values[i], selected, i);
 		}
-		sendMessage("Update sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
+		sendMessage("Frissítés sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public void delete() {
@@ -216,12 +216,12 @@ public class FileController {
 			selected = GeneralController.getSelectedIndeces(ot);
 		}
 		catch(MyAppException exc) {
-			sendMessage("Update failed: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			sendMessage("Törlés sikertelen: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		this.sddesc.getData().remove(selected);
 		((OutputTableModel)ot.getModel()).removeRow(selected);
-		sendMessage("Delete sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
+		sendMessage("Törlés sikeres sikeres! Mentsen, hogy a változás a fájlba kerüljön!", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public void buildTablesFromSDDesc() {

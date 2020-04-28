@@ -29,8 +29,8 @@ public class GeneralController {
 	
 	public static int getSelectedIndeces(JTable jt) throws MyAppException{
 		int[] selected = jt.getSelectedRows();
-		if(selected.length == 0) throw new MyAppException("No rows selected!");
-		if(selected.length > 1) throw new MyAppException("Too many rows selected!");
+		if(selected.length == 0) throw new MyAppException("Nem volt sor kiválasztva!");
+		if(selected.length > 1) throw new MyAppException("Túl sok sor kiválasztva! (egyszerre egyet lehet)");
 		return selected[0];
 	}
 	

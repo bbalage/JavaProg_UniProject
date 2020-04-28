@@ -56,7 +56,6 @@ public class LoginView extends JDialog {
 		
 		textUsername = new JTextField();
 		textUsername.setBounds(41, 120, 279, 19);
-		textUsername.setText("H20_N5IF3V");
 		getContentPane().add(textUsername);
 		textUsername.setColumns(10);
 		

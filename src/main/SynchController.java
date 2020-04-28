@@ -136,7 +136,7 @@ public class SynchController {
 	
 	public void dataModifyingAction(int type) {
 		if(this.mainView.getTableInput().getColumnCount() <= 0 || this.mainView.getTableOutput().getColumnCount() <= 0) {
-			sendMessage("No data structure present to execute the action on.", JOptionPane.ERROR_MESSAGE);
+			sendMessage("Nem volt adat, amin a műveletet el lehetett volna végezni!", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		switch(this.sOpt) {
@@ -174,7 +174,6 @@ public class SynchController {
 		case ORACLE:
 		case SQLITE:
 			try {
-				System.out.println("Synch session with oracle/SQLite loading.");
 				dbController.setupDBInterface();
 			}
 			catch(SQLException exc) {
@@ -187,7 +186,7 @@ public class SynchController {
 			fController.setupFileInterface();
 			break;
 		case NONE:
-			sendMessage("No option was present for loading synched session.", JOptionPane.INFORMATION_MESSAGE);
+			sendMessage("No option was present for loading synched session. Revise program!", JOptionPane.INFORMATION_MESSAGE);
 			break;
 		}
 	}
@@ -204,7 +203,7 @@ public class SynchController {
 			this.sddesc = null;
 			break;
 		case NONE:
-			sendMessage("No synch was active.", JOptionPane.INFORMATION_MESSAGE);
+			sendMessage("No synch was active. Revise program!", JOptionPane.INFORMATION_MESSAGE);
 			break;
 		}
 		this.sOpt = SynchOption.NONE;
@@ -221,7 +220,7 @@ public class SynchController {
 	
 	public void saveAs() {
 		if(this.mainView.getTableOutput().getColumnCount() <= 0 || this.mainView.getTableInput().getColumnCount() <= 0) {
-			sendMessage("No data structure present to execute the action on.", JOptionPane.ERROR_MESSAGE);
+			sendMessage("Nem volt adat, amin a műveletet végre lehetett volna hajtani!", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		this.fController.saveAs(this.sddesc);

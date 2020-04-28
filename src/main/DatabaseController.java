@@ -121,7 +121,7 @@ public class DatabaseController {
 			dbapi.prepareInsert(this.sddesc.getDataTypeName(), this.sddesc.getNames());
 		}
 		catch(SQLException exc) {
-			sendMessage("Querying from database failed. - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			sendMessage("Sikertelen lekérdezés az adatbázisból - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 			exc.printStackTrace();
 			return null;
 		}
@@ -134,13 +134,13 @@ public class DatabaseController {
 			values = gc.formatRow(values, this.sddesc.getTypes());
 			dbapi.baseInsert(this.sddesc.getTypes(), values);
 			buildTableFromResultSet(2);
-			sendMessage("Insertion successful.", JOptionPane.INFORMATION_MESSAGE);
+			sendMessage("Felvitel sikeres.", JOptionPane.INFORMATION_MESSAGE);
 		}
 		catch(MyAppException exc) {
-			sendMessage("Insertion failed! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			sendMessage("Felvitel sikertelen! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
 		catch(SQLException exc) {
-			sendMessage("Insertion failed! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+			sendMessage("Felvitel sikertelen! - "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	

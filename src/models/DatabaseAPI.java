@@ -121,7 +121,7 @@ public class DatabaseAPI {
 				}
 			}
 			else if(rowtypes[i].equals(String.class.getCanonicalName())) insertstmt.setString(i+1, (String)values[i]);
-			else throw new SQLException("Bind value none of the types we are ready to handle: "+rowtypes[i]);
+			else throw new SQLException("Kötési érték egyik sem azok közül, amiknek a kezelésére fel vagyunk készülve: "+rowtypes[i]);
 		}
 		insertstmt.execute();
 	}
@@ -132,7 +132,6 @@ public class DatabaseAPI {
 			sql = sql+"?, ";
 		}
 		sql = sql.substring(0, sql.length()-2) + ")";
-		System.out.println("Insert statement to be prepared: "+sql);
 		insertstmt = conn.prepareStatement(sql);
 		insertrsmd = mrs.getMetaData();
 	}
@@ -153,7 +152,6 @@ public class DatabaseAPI {
 			}
 		}
 		sql = sql.substring(0, sql.length()-5);
-		System.out.println("Update to be prepared: "+sql);
 		PreparedStatement updatestmt = conn.prepareStatement(sql);
 		String[] rowtypes = sddesc.getTypes();
 		for(int i = 0, j = rowtypes.length+1; i < rowtypes.length; i++) {
@@ -221,7 +219,7 @@ public class DatabaseAPI {
 				else if(mode == 2) deletestmt.setString(i+1, conds[i].toString());
 			}
 			else if(rowtypes[i].equals(String.class.getCanonicalName())) deletestmt.setString(i+1, (String)conds[i]);
-			else throw new SQLException("Bind value none of the types we are ready to handle: "+rowtypes[i]);
+			else throw new SQLException("Kötési érték egyik sem azok közül, amiknek a kezelésére fel vagyunk készülve: "+rowtypes[i]);
 		}
 		deletestmt.execute();
 	}

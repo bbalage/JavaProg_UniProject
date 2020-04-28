@@ -109,7 +109,7 @@ public class FilePolicyModel {
 			finishSaveAsJson();
 			break;
 		default:
-			throw new MyAppException("Save mode not supported.");
+			throw new MyAppException("Save mode not supported. Revise program!");
 		}
 	}
 	
@@ -212,7 +212,7 @@ public class FilePolicyModel {
 			break;
 		default:
 			clearSaveSession();
-			throw new MyAppException("Unsupported save option.");
+			throw new MyAppException("Unsupported save option. Revise program!");
 		}
 		clearSaveSession();
 	}
@@ -226,7 +226,7 @@ public class FilePolicyModel {
 	}
 	
 	public SynchedDataDescriptor readFromFile(File source, int opt) throws MyAppException, IOException, ParserConfigurationException, SAXException, JSONException{
-		if(source.isDirectory()) throw new MyAppException("Chosen file was a directory!");
+		if(source.isDirectory()) throw new MyAppException("Választott fájl jegyzék volt!");
 		String fileName = source.getName();
 		String appendix;
 		switch(opt) {
@@ -239,7 +239,7 @@ public class FilePolicyModel {
 		if(fileName.length() > appendix.length()) {
 			if(!fileName.substring(fileName.length()-appendix.length(), fileName.length()).equals(appendix)) throw new MyAppException("File does not have xml extension.");
 		}
-		else throw new MyAppException("File does not have " + appendix + "extension.");
+		else throw new MyAppException("Fájl kiterjesztése nem " + appendix);
 		SynchedDataDescriptor sddesc = null;
 		switch(opt) {
 		//case 0:
@@ -252,7 +252,7 @@ public class FilePolicyModel {
 			sddesc = readJson(source);
 			break;
 		default:
-			throw new MyAppException("Unsupported option for read session.");
+			throw new MyAppException("Unsupported option for read session. Revise program!");
 		}
 		this.synchMode = opt;
 		this.synchedFile = source;
@@ -269,7 +269,7 @@ public class FilePolicyModel {
 		in.close();
 		JSONObject jRoot = new JSONObject(jsonData.toString());
 		JSONArray jRootName= jRoot.names();
-		if(jRootName.length() != 1) throw new MyAppException("Filestructure not resembling table structure.");
+		if(jRootName.length() != 1) throw new MyAppException("Fájlstruktúra nem táblastruktúrát mutat!");
 		JSONArray jRootArray = jRoot.getJSONArray(jRootName.getString(0));
 		String dataName = jRootName.getString(0);
 		String[] types = getTypesFromJson(jRootArray);
@@ -277,7 +277,7 @@ public class FilePolicyModel {
 		if(types != null) typesSet = true;
 		else typesSet = false;
 		if(typesSet) {
-			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
+			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Fájlban lévő típusok nem a kezelhető kanonikus nevek!");
 		}
 		String[] names = getNamesFromJson(jRootArray, typesSet);
 		ArrayList<Object[]> values = new ArrayList<Object[]>();
@@ -294,7 +294,7 @@ public class FilePolicyModel {
 		DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 		Document dom  = db.parse(source);
 		NodeList nodeList = dom.getChildNodes();
-		if(nodeList.getLength() != 1) throw new MyAppException("Number of root elements in xml is invalid.");
+		if(nodeList.getLength() != 1) throw new MyAppException("Helytelen mennyiségű gyökér elem az xml fájlban!");
 		Element rootE = (Element)nodeList.item(0);
 		NodeList rowNodes = rootE.getChildNodes();
 		NodeList fieldNodes = null;
@@ -320,7 +320,7 @@ public class FilePolicyModel {
 			}
 		}
 		if(typesSet) {
-			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
+			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Fájlban lévő típusok nem a kezelhető kanonikus nevek!");
 		}
 		String dataTypeName = rootE.getTagName();
 		SynchedDataDescriptor sddesc = null;
@@ -334,7 +334,7 @@ public class FilePolicyModel {
 		try {
 			JSONObject jRowObj = jRootArray.getJSONObject(index);
 			JSONArray jValNames = jRowObj.names();
-			if(jValNames.length() != 1) throw new MyAppException("Incompatible file structure detected at getValuesFromJsonAt.");
+			if(jValNames.length() != 1) throw new MyAppException("Inkompatibilis fájlstruktúra detektálva json fájl olvasásakor!");
 			JSONArray jFields = jRowObj.getJSONArray(jValNames.getString(0));
 			for(int i = 0; i < jFields.length(); i++) {
 				JSONObject jField = jFields.getJSONObject(i);
@@ -353,19 +353,19 @@ public class FilePolicyModel {
 		try {
 			JSONObject jValObj = jRootArray.getJSONObject(index);
 			JSONArray jValNames = jValObj.names();
-			if(jValNames.length() != 1) throw new MyAppException("Incompatible file structure detected at getNamesFromJson.");
+			if(jValNames.length() != 1) throw new MyAppException("Inkompatibilis fájlstruktúra detektálva json fájl olvasásakor!");
 			JSONArray jVals = jValObj.getJSONArray(jValNames.getString(0));
 			for(int i = 0; i < jVals.length(); i++) {
 				JSONObject jObj = jVals.getJSONObject(i);
 				JSONArray jArr = jObj.names();
-				if(jArr.length() != 1) throw new MyAppException("Incompatible file structure detected at getNamesFromJson, inside loop.");
+				if(jArr.length() != 1) throw new MyAppException("Inkompatibilis fájlstruktúra detektálva json fájl olvasásakor!");
 				String name = jArr.getString(0);
-				if(name.length() == 0) throw new MyAppException("Name's length was 0!");
+				if(name.length() == 0) throw new MyAppException("Oszlopnév hossza nulla!");
 				names.add(name);
 			}
 		}
 		catch(JSONException exc) {
-			throw new MyAppException("Could not get names back: "+exc.getMessage());
+			throw new MyAppException("Nem sikerült a neveket visszakapni: "+exc.getMessage());
 		}
 		return names.toArray(new String[0]);
 	}
@@ -374,7 +374,6 @@ public class FilePolicyModel {
 		ArrayList<String> types = new ArrayList<String>();
 		try {
 			JSONObject jTypeObj = jRootArray.getJSONObject(0);
-			System.out.println("Got mytypes.");
 			JSONArray jTypes = jTypeObj.getJSONArray("mytypes");
 			for(int i = 0; i < jTypes.length(); i++) {
 				JSONObject jObj = jTypes.getJSONObject(i);
@@ -401,7 +400,7 @@ public class FilePolicyModel {
 				continue;
 			}
 		}
-		if(values.size()!=fields) throw new MyAppException("File content does not match table content structure.");
+		if(values.size()!=fields) throw new MyAppException("Fájltartalom nem tábla struktúrájú!");
 		return values.toArray(new String[0]);
 	}
 	

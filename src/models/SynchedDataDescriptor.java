@@ -48,12 +48,11 @@ public class SynchedDataDescriptor {
 			names.add(rsmd.getColumnName(i));
 		}
 		if(types.size() > 0) this.dataTypeName = tablename;
-		else throw new SQLException("No columns in the given table!");
+		else throw new SQLException("Nincs oszlop az adott táblában!");
 		this.typesSet = true;
 		this.data = null;
 		this.names = names.toArray(new String[0]);
 		this.types = types.toArray(new String[0]);
-		System.out.println(this);
 	}
 
 	public ArrayList<Object[]> getData() {

@@ -40,31 +40,29 @@ public class GeneralChecker {
 					ret[i] = Integer.parseInt(row[i].toString());
 				}
 				catch(NumberFormatException exc) {
-					throw new MyAppException("Could not convert to number: "+exc.getMessage());
+					throw new MyAppException("Nem sikerült számra konvertálni: "+exc.getMessage());
 				}
 				else if(types[i].equals(String.class.getCanonicalName())) ret[i] = row[i];
 				else if(types[i].equals(Timestamp.class.getCanonicalName())) {ret[i] = convertToTimestamp(row[i].toString()); System.out.println("Timestamp string: "+row[i]+"; timestamp: "+ret[i]);}
 				else if(types[i].equals(java.util.Date.class.getCanonicalName())) {ret[i] = convertToDate(row[i].toString()); System.out.println("Date string: "+row[i]+"; date: "+ret[i]);}
 				else if(types[i].equals(java.sql.Date.class.getCanonicalName())) ret[i] = convertToSQLDate(row[i].toString());
-				else throw new MyAppException("Type of the row was not the application can convert: "+types[i] + " at "+ i);
+				else throw new MyAppException("Sornak a típusa nem volt konvertálható az alkalmazás számára: "+types[i] + " at "+ i);
 			}
 			else if(row[i] instanceof BigDecimal) ret[i] = ((BigDecimal)row[i]).intValue();
 			else if(row[i] instanceof Timestamp && types[i].equals(java.sql.Date.class.getCanonicalName())) 
 			{
 				ret[i] = new java.sql.Date(((Timestamp)row[i]).getTime());
-				System.out.println("Timestamp: "+row[i]+"; sqldate: "+ret[i]);}
+			}
 			else if(row[i] instanceof Timestamp && types[i].equals(java.util.Date.class.getCanonicalName()))
 			{
 				ret[i] = new java.util.Date(((Timestamp)row[i]).getTime());
-				System.out.println("Timestamp: "+row[i]+"; utildate: "+ret[i]);}
-			//else if(row[i] instanceof Long && cls[i].equals(java.util.Date.class)) {ret[i] = new java.util.Date(((Timestamp)row[i]).getTime());}
+			}
 			else if(row[i] instanceof oracle.sql.TIMESTAMP && types[i].equals(java.sql.Timestamp.class.getCanonicalName())) {
 				try {
 					ret[i] = new java.sql.Timestamp(((oracle.sql.TIMESTAMP)row[i]).dateValue().getTime());
-					System.out.println("Oracle timestamp: "+row[i]+"; timestamp: "+ret[i]);
 				}
 				catch(SQLException exc) {
-					throw new MyAppException("Conversion of Oracle timestamp failed: "+exc.getMessage());
+					throw new MyAppException("Oracle timestamp-ról való konverzió sikertelen: "+exc.getMessage());
 				}
 			}
 			else if(row[i] instanceof Long && types[i].equals(Integer.class.getCanonicalName())) {
@@ -72,10 +70,10 @@ public class GeneralChecker {
 					ret[i] = (Integer)row[i];
 				}
 				catch(ClassCastException exc) {
-					throw new MyAppException("Could not cast Long into Integer: "+exc.getMessage());
+					throw new MyAppException("Long típust nem sikerült Integerré kasztolni: "+exc.getMessage());
 				}
 			}
-			else throw new MyAppException("Input type was none of types we are ready to handle: "+row[i].getClass().getCanonicalName() + " at "+ i);
+			else throw new MyAppException("Bemeneti típus kezelésére nem voltunk felkészülve: "+row[i].getClass().getCanonicalName() + " at "+ i);
 		}
 		return ret;
 	}
@@ -105,7 +103,7 @@ public class GeneralChecker {
 				continue;
 			}
 		}
-		if(dt == null) throw new MyAppException("Could not convert to timestamp.");
+		if(dt == null) throw new MyAppException("Nem sikerült timestamp-ra konvertálni!");
 		else return new Timestamp(dt.getTime());
 	}
 	
@@ -120,7 +118,7 @@ public class GeneralChecker {
 				continue;
 			}
 		}
-		if(date == null) throw new MyAppException("Could not convert to date.");
+		if(date == null) throw new MyAppException("Nem sikerült dátumra konvertálni!");
 		else return date;
 	}
 	
