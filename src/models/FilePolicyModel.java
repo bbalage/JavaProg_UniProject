@@ -80,9 +80,9 @@ public class FilePolicyModel {
 		this.saveMode = opt;
 		initLocalSaveSessionData(sddesc);
 		switch(opt) {
-		case 0:
+		//case 0:
 			//CSV
-			break;
+			//break;
 		case 1:
 			startSaveAsXml(sddesc);
 			break;
@@ -272,29 +272,17 @@ public class FilePolicyModel {
 		if(jRootName.length() != 1) throw new MyAppException("Filestructure not resembling table structure.");
 		JSONArray jRootArray = jRoot.getJSONArray(jRootName.getString(0));
 		String dataName = jRootName.getString(0);
-		System.out.println(dataName);
 		String[] types = getTypesFromJson(jRootArray);
 		boolean typesSet;
-		if(types != null) {
-			for(String ts : types) System.out.println(ts);
-			typesSet = true;
-		}
-		else {
-			System.out.println("Types was null.");
-			typesSet = false;
-		}
+		if(types != null) typesSet = true;
+		else typesSet = false;
 		if(typesSet) {
 			if(!gc.checkIfCanonicalNames(types)) throw new MyAppException("Type attributes are not all canonical names.");
 		}
 		String[] names = getNamesFromJson(jRootArray, typesSet);
-		for(String ns : names) System.out.println(ns);
 		ArrayList<Object[]> values = new ArrayList<Object[]>();
 		for(int i = typesSet ? 1 : 0; i < jRootArray.length(); i++) {
 			values.add(getValuesFromJsonAt(jRootArray, names, i));
-		}
-		for(Object[] row : values) {
-			for(Object field : row) System.out.print(field+" - ");
-			System.out.println();
 		}
 		SynchedDataDescriptor sddesc = null;
 		if(typesSet) sddesc = new SynchedDataDescriptor(dataName, types, names, typesSet, values);
