@@ -28,7 +28,7 @@ public class HelpModel {
 			inline = in.readLine();
 			if(inline == null) break;
 			if(inline.substring(0, 2).equals("::")) break;
-			helpText.append(inline);
+			helpText.append(inline+"\n");
 		}
 		while(true);
 		in.close();

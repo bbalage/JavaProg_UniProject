@@ -14,6 +14,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+import java.awt.Font;
 
 public class HelpView extends JDialog {
 
@@ -21,6 +22,9 @@ public class HelpView extends JDialog {
 	private JTextArea textManual;
 	private HelpOptions ho;
 
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public HelpView(JDialog caller2, HelpController hc, HelpOptions ho) {
 		super(caller2, "Help szöveg", true);
 		helpViewConstruct(caller2, hc, ho);
@@ -33,8 +37,8 @@ public class HelpView extends JDialog {
 
 	private void helpViewConstruct(Window caller, HelpController hc, HelpOptions ho) {
 		Rectangle rec = caller.getBounds();
-		int x = rec.x+rec.width+5;
-		int y = rec.y+rec.height+5;
+		int x = caller.getLocation().x+caller.getWidth()+5;
+		int y = caller.getLocation().y;
 		this.caller = caller;
 		this.ho = ho;
 		setBounds(x, y, 450, 700);
@@ -45,6 +49,7 @@ public class HelpView extends JDialog {
 		getContentPane().add(scrollPane);
 		
 		textManual = new JTextArea();
+		textManual.setFont(new Font("Dialog", Font.BOLD, 13));
 		scrollPane.setViewportView(textManual);
 		
 		JButton btnClose = new JButton("Bezár");
