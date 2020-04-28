@@ -96,6 +96,11 @@ public class FilePolicyModel {
 	public void save(SynchedDataDescriptor sddesc) throws ParserConfigurationException, IOException, TransformerException, MyAppException, JSONException{
 		startSaveSession(sddesc);
 		switch(this.saveMode) {
+		case 0:
+			startSaveAsCsv(sddesc);
+			for(Object[] row : sddesc.getData()) appendRowCsv(row);
+			finishSaveAsCsv();
+			break;
 		case 1:
 			startSaveAsXml(sddesc);
 			for(Object[] row : sddesc.getData()) appendRowXml(row);
