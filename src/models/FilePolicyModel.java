@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
@@ -26,7 +27,7 @@ public class FilePolicyModel {
 	private File targetFile;
 	private File synchedFile = null;
 	private String separator = System.getProperty("file.separator");
-	private int saveMode; //0: csv; 1: xml; 2: json
+	private int saveMode; //0: csv; 1: xml; 2: json; 3: dat
 	private int synchMode;
 	private Document dom;
 	private boolean areTypesSet;
@@ -66,6 +67,7 @@ public class FilePolicyModel {
 		case 0: appendix = ".csv"; break;
 		case 1: appendix = ".xml"; break;
 		case 2: appendix = ".json"; break;
+		case 3: appendix = ".dat"; break;
 		default:
 			throw new MyAppException("Nem támogatott fájl mentési opció a mentés másként funkcióban.");
 		}
@@ -89,6 +91,9 @@ public class FilePolicyModel {
 			break;
 		case 2:
 			startSaveAsJson(sddesc);
+			break;
+		case 3:
+			//startSaveAsDat(sddesc);
 			break;
 		}
 	}
@@ -117,6 +122,12 @@ public class FilePolicyModel {
 		default:
 			throw new MyAppException("Save mode not supported. Revise program!");
 		}
+	}
+	
+	public void saveToDat(SynchedDataDescriptor sddesc) throws IOException{
+		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(this.targetFile));
+		out.writeObject(sddesc);
+		out.close();
 	}
 	
 	private void startSaveAsCsv(SynchedDataDescriptor sddesc) {

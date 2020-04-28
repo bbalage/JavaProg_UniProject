@@ -117,10 +117,15 @@ public class FileController {
 			flm.startSaveSession(this.sddesc, targetDir, targetFileName, opt, false);
 			boolean dataInMemory = this.sddesc.getData() != null;
 			if(dataInMemory) {
-				for(int i = 0; i < this.sddesc.getData().size(); i++) {
-					flm.appendRow(this.sddesc.getData().get(i));
+				if(opt == 3) {
+					flm.saveToDat(sddesc);
 				}
-				flm.finishSave();
+				else {
+					for(int i = 0; i < this.sddesc.getData().size(); i++) {
+						flm.appendRow(this.sddesc.getData().get(i));
+					}
+					flm.finishSave();
+				}
 			}
 			else {
 				JTable jt = this.mainView.getTableOutput();

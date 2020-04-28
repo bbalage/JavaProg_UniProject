@@ -1,12 +1,13 @@
 package models;
 
 import java.sql.Timestamp;
+import java.io.Serializable;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 
-public class SynchedDataDescriptor {
+public class SynchedDataDescriptor implements Serializable{
 	
 	private String dataTypeName;
 	private String[] types;

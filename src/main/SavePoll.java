@@ -57,10 +57,15 @@ public class SavePoll extends JDialog {
 		rdbtnJson.setBounds(12, 110, 149, 23);
 		getContentPane().add(rdbtnJson);
 		
+		JRadioButton rdbtnDat = new JRadioButton("dat fájlba");
+		rdbtnDat.setBounds(12, 140, 149, 23);
+		getContentPane().add(rdbtnDat);
+		
 		btg.add(rdbtnCsv);
 		btg.add(rdbtnXml);
 		btg.add(rdbtnJson);
-		rdbtnXml.setSelected(true);
+		btg.add(rdbtnDat);
+		rdbtnCsv.setSelected(true);
 		
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -68,6 +73,7 @@ public class SavePoll extends JDialog {
 				if(rdbtnCsv.isSelected()) opt = 0;
 				else if(rdbtnXml.isSelected()) opt = 1;
 				else if(rdbtnJson.isSelected()) opt = 2;
+				else if(rdbtnDat.isSelected()) opt = 3;
 				else opt = -1;
 				fc.saveAsFile(opt, textFileName.getText());
 			}
