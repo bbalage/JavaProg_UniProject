@@ -71,6 +71,9 @@ public class FilePolicyModel {
 		if(targetName.length() >= appendix.length()+1) {
 			if(!targetName.substring(targetName.length()-appendix.length(), targetName.length()).equals(appendix)) targetName+=appendix;
 		}
+		else {
+			targetName += appendix;
+		}
 		String path = targetDir.getAbsolutePath()+separator+targetName;
 		this.targetFile = new File(path);
 		if(!overWrite && this.targetFile.exists()) throw new MyAppException("Ez a fájl már létezik! A felülírás nem engedélyezett a mentés másként funkcióban.");
@@ -154,7 +157,8 @@ public class FilePolicyModel {
 		JSONArray jAr = new JSONArray();
 		for(int i = 0; i < row.length; i++) {
 			JSONObject jObj = new JSONObject();
-			jObj.put(this.columnnames[i], row[i]);
+			Object input = row[i] == null ? "" : row[i];
+			jObj.put(this.columnnames[i], input);
 			jAr.put(i, jObj);
 		}
 		JSONObject jInstance = new JSONObject();
