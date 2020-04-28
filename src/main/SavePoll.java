@@ -1,6 +1,5 @@
 package main;
 
-import java.awt.EventQueue;
 
 import javax.swing.JDialog;
 import javax.swing.JFrame;

@@ -2,17 +2,11 @@ package main;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 
 import models.*;
-import oracle.net.aso.f;
 import utilities.*;
 
 public class SynchController {
