@@ -164,6 +164,11 @@ public class FileController {
 		JTable it = this.mainView.getTableInput();
 		Object[] values = GeneralController.getRow(it, 0);
 		boolean empty = true;
+		for(int i = 0; i < values.length; i++) {
+			if(values[i] != null) {
+				values[i] = values[i].toString().length() == 0 ? null : values[i];
+			}
+		}
 		for(Object obj : values) if(obj != null) {empty = false; break;}
 		if(empty) {
 			sendMessage("Nem volt megadva bemeneti érték!", JOptionPane.ERROR_MESSAGE);
