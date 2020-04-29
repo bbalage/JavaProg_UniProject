@@ -229,8 +229,17 @@ public class SynchController {
 		hc.getHelpWindow(caller, ho);
 	}
 	
+	public void fetchIntoInput() {
+		try {
+			GeneralController.fetchToInput(this.mainView.getTableInput(), this.mainView.getTableOutput());
+		}
+		catch(MyAppException exc) {
+			sendMessage("Nem sikerült a másolás: "+exc.getMessage(), JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
 	public void sendMessage(String msg, int opt) {
-		JOptionPane.showMessageDialog(null, msg, "Szinkronizáció üzenet.", opt);
+		JOptionPane.showMessageDialog(this.mainView, msg, "Szinkronizáció üzenet.", opt);
 	}
 	
 	public SynchOption getsOpt() {

@@ -259,6 +259,6 @@ public class FileController {
 	
 	
 	public void sendMessage(String msg, int opt) {
-		JOptionPane.showMessageDialog(null, msg, "Fájl kontroll üzenet.", opt);
+		JOptionPane.showMessageDialog(this.mainView, msg, "Fájl kontroll üzenet.", opt);
 	}
 }

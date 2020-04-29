@@ -5,10 +5,20 @@ import java.util.ArrayList;
 
 import javax.swing.JTable;
 
+import utilities.InputTableModel;
 import utilities.MyAppException;
 
 public class GeneralController {
 
+	public static void fetchToInput(JTable input, JTable output) throws MyAppException{
+		int selected = getSelectedIndeces(output);
+		Object[] row = getRow(output, selected);
+		InputTableModel itm = (InputTableModel)input.getModel();
+		for(int i = 0; i < input.getColumnCount(); i++) {
+			itm.setValueAt(row[i], 0, i);
+		}
+	}
+	
 	public static void setTablePreferredWidths(JTable jt, String[] types) {
 		for(int i = 0; i < jt.getColumnCount(); i++) {
 			if(types == null) {

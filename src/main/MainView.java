@@ -202,7 +202,7 @@ public class MainView extends JFrame {
 				synchController.closeSynchSession();
 			}
 		});
-		btnKapcsolatotLezr.setBounds(794, 173, 180, 25);
+		btnKapcsolatotLezr.setBounds(794, 190, 180, 25);
 		tablePanel.add(btnKapcsolatotLezr);
 		
 		JButton btnSaveAs = new JButton("Mentés másként");
@@ -231,6 +231,15 @@ public class MainView extends JFrame {
 		});
 		btnSave.setBounds(50, 173, 170, 25);
 		tablePanel.add(btnSave);
+		
+		JButton btnFetch = new JButton("Kiolvas");
+		btnFetch.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				synchController.fetchIntoInput();
+			}
+		});
+		btnFetch.setBounds(814, 140, 140, 25);
+		tablePanel.add(btnFetch);
 	}
 	
 	void switchToTableCard() {

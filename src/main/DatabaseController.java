@@ -160,6 +160,7 @@ public class DatabaseController {
 		catch(SQLException exc) {
 			sendMessage("Frissítés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
+		sendMessage("Frissítés sikeres.", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	public void delete() {
@@ -223,6 +224,6 @@ public class DatabaseController {
 	
 	
 	public void sendMessage(String msg, int opt) {
-		JOptionPane.showMessageDialog(null, msg, "Adatbázis kontroll üzenet.", opt);
+		JOptionPane.showMessageDialog(this.mainView, msg, "Adatbázis kontroll üzenet.", opt);
 	}
 }
