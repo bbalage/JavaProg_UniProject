@@ -177,7 +177,7 @@ public class DatabaseController {
 		catch(SQLException exc) {
 			sendMessage("Törlés sikertelen! - " + exc.getMessage(), JOptionPane.ERROR_MESSAGE);
 		}
-		
+		sendMessage("Törlés sikeres.", JOptionPane.INFORMATION_MESSAGE);
 	}
 	
 	//Mode is 0: Sets up input table.

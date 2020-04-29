@@ -36,6 +36,7 @@ public class FilePolicyModel {
 	private JSONObject jRoot;
 	private JSONArray jArray;
 	private StringBuilder csvFileContent;
+	private SynchedDataDescriptor toDat;
 	private String dataName;
 	private String instancename;
 	private String[] classnames;
@@ -94,7 +95,7 @@ public class FilePolicyModel {
 			startSaveAsJson(sddesc);
 			break;
 		case 3:
-			//No operation necessary. Logic handled in file controller.
+			startSaveAsDat(sddesc);
 			break;
 		}
 	}
@@ -134,6 +135,10 @@ public class FilePolicyModel {
 		ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(this.targetFile));
 		out.writeObject(sddesc);
 		out.close();
+	}
+	
+	private void startSaveAsDat(SynchedDataDescriptor sddesc) {
+		this.toDat = new SynchedDataDescriptor(sddesc.getDataTypeName(), sddesc.getTypes(), sddesc.getNames(), sddesc.areTypesSet(), new ArrayList<Object[]>());
 	}
 	
 	private void startSaveAsCsv(SynchedDataDescriptor sddesc) {
@@ -180,7 +185,14 @@ public class FilePolicyModel {
 		case 2:
 			appendRowJson(row);
 			break;
+		case 3:
+			appendRowDat(row);
+			break;
 		}
+	}
+	
+	private void appendRowDat(Object[] row) {
+		this.toDat.getData().add(row);
 	}
 	
 	private void appendRowCsv(Object[] row) {
@@ -245,6 +257,9 @@ public class FilePolicyModel {
 		toJsonFile.close();
 	}
 	
+	private void finishSaveAsDat() throws IOException{
+		saveToDat(this.toDat);
+	}
 	
 	public void finishSave() throws ParserConfigurationException, IOException, TransformerException, MyAppException, JSONException{
 		switch(this.saveMode) {
@@ -256,6 +271,9 @@ public class FilePolicyModel {
 			break;
 		case 2:
 			finishSaveAsJson();
+			break;
+		case 3:
+			finishSaveAsDat();
 			break;
 		default:
 			clearSaveSession();
