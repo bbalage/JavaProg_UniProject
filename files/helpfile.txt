@@ -120,7 +120,7 @@ fájlba a számítógépén. A fájl helyét és nevét is
 van lehetősége megadni.
 Választhat a támogatott formátumok között is, amik
 jelenleg:
-.json; .xml
+.json; .xml; .csv; .dat
 FONTOS:
 Egy fájlba csak egy táblát tudunk menteni.
 
@@ -141,10 +141,11 @@ megtekinteni és módosítani. Ez a fájl lehet
 json vagy xml fájl.
 
 Megjegyzés:
-A funkcionalitás ugyanaz json és xml fájl esetén is.
+A funkcionalitás ugyanaz csv, dat, json és xml
+fájl esetén is.
 
 FONTOS:
-Csak olyan .json vagy .xml kiterjesztésű fájlt
+Csak olyan megfelelő kiterjesztésű fájlt
 tudunk kezelni, amelynek szerkezete megfelel egy
 darab tábla szerkezetének. (adatbázis tábla)
 Tehát érdemes olyan fájlt kezelni, amit előzőleg
@@ -191,7 +192,7 @@ gombra!
 Lehetősége van elmenteni a kezelt adatokat
 más néven vagy más kiterjesztéssel is.
 A támogatott mentési formátumok:
-.json; .xml
+.json; .xml; .csv; .dat
 Ehhez nyomja meg a "Mentés másként" gombot.
 
 FONTOS:
@@ -211,7 +212,7 @@ A formátumok ellenőrzésére akkor van lehetőség,
 ha a kezelt fájlban kezelhető információt
 találtunk arra, hogy az egyes oszlopok adatait
 milyen típusú adatoknak tekintsük.
-Ennélfogva, ha az xml fájlban nem volt
+Ennélfogva, ha például az xml fájlban nem volt
 megadva, hogy dátumról van szó, akkor
 az alkalmazásnak nincs lehetősége ellenőrizni,
 hogy valóban dátumot ad-e meg utána a felhasználó.
