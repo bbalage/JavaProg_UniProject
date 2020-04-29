@@ -94,7 +94,7 @@ public class FilePolicyModel {
 			startSaveAsJson(sddesc);
 			break;
 		case 3:
-			//startSaveAsDat(sddesc);
+			//No operation necessary. Logic handled in file controller.
 			break;
 		}
 	}
@@ -120,9 +120,14 @@ public class FilePolicyModel {
 			}
 			finishSaveAsJson();
 			break;
+		case 3:
+			saveToDat(sddesc);
+			break;
 		default:
+			clearSaveSession();
 			throw new MyAppException("Save mode not supported. Revise program!");
 		}
+		clearSaveSession();
 	}
 	
 	public void saveToDat(SynchedDataDescriptor sddesc) throws IOException{
