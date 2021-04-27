@@ -11,6 +11,9 @@
     <properties>
         <maven.compiler.source>13</maven.compiler.source>
         <maven.compiler.target>13</maven.compiler.target>
+        <sonar.projectKey>bbalage_JavaProg_UniProject</sonar.projectKey>
+        <sonar.organization>bbalage</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
